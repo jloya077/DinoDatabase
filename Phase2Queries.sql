@@ -1,3 +1,6 @@
+select * 
+from Dinosaur;
+
 select *
 from Dinosaur
 where d_name = "Ammosaurus";
@@ -112,13 +115,6 @@ Select *
 From requests 
 Where r_name = 'Albertaceratops' and r_updatestatus = 'f';
 
-INSERT INTO requests( r_name, r_table, r_comment1, r_comment2, r_updatestatus )
-VALUES("Albertaceratops" , "Location", "Update nations", "Fossil found Canada as well as USA", "f");
-
-
-INSERT INTO requests( r_name, r_table, r_comment1, r_comment2, r_updatestatus )
-VALUES("n/a" , "n/a", "n/a", "hey we should have nicknames for the dinosaurs maybe","f");
-
 SELECT d_name, f_fossilData ,f_fossilEvidence
 FROM Dinosaur, fossil WHERE d_dinokey = f_dinokey AND
 f_fossilEvidence LIKE "%iguana%"
@@ -128,14 +124,6 @@ SELECT d_name, f_fossilData, f_fossilEvidence
 FROM Dinosaur, fossil WHERE d_dinokey = f_dinokey AND
 f_fossilData LIKE "%skeleton%"
 GROUP BY d_name;
-
-update Dinosaur
-set d_diet = 'carnivore'
-where d_diet = 'carnivorous';
-
-update Dinosaur
-set d_diet = 'herbivore'
-where d_diet = 'herbivorous';
 
 
 
