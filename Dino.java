@@ -254,7 +254,7 @@ public class Dino
       {
         String tableName = "";
         System.out.println("Which Information would you like?");
-        System.out.println("Options: fossil, physical traits, pronunciation, taxonomy, time period ");
+        System.out.println("Options: dinosaur, fossil, physical traits, pronunciation, taxonomy, time period ");
         System.out.println("Enter 'exit' to stop");
         tableName = input.nextLine();
         if(tableName.equals("exit"))
@@ -280,7 +280,28 @@ public class Dino
     Statement stmt = conn.createStatement();
     String res = "";
 
-    if(table.equals("fossil"))
+    if(table.equals("dinosaur"))
+    {
+      res = "select * " +
+            "from Dinosaur " +
+            "where d_name = \'"+dinosaur+"\'";
+            
+      result = stmt.executeQuery(res);
+      System.out.println("--------------------------------------------------------------------------------------------");
+      if(result.next())
+      {
+        System.out.println("Dino key: " + result.getInt(1));
+        System.out.println("Name: " + result.getString(2));  
+        System.out.println("Diet: " + result.getString(3)); 
+        System.out.println("Time Period: " + result.getString(4));  
+        System.out.println("Description: " + result.getString(5)); 
+        System.out.println("Type: " + result.getString(6)); 
+        System.out.println("Habitat Key: " + result.getInt(7));
+        System.out.println("--------------------------------------------------------------------------------------------");
+      }
+
+    }
+    else if(table.equals("fossil"))
     {
       res = "select f_fossilData, f_period from Dinosaur, fossil where d_name = \'"+dinosaur+"\'";
       result = stmt.executeQuery(res);
