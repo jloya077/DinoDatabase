@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import javax.lang.model.util.ElementScanner6;
+
 public class Dino
 {
   public static void main(String[] args) throws SQLException, InterruptedException
@@ -115,6 +117,10 @@ public class Dino
         System.out.println("0: Exit User Menu");
         System.out.println("1: Display Complete Dinosaur Data");
         System.out.println("2: Search by Specific Dinosaur");
+        System.out.println("3: Search by Species");
+        System.out.println("4: Longest Dinosaur from each Habitat");
+        System.out.println("5: Search Top Heaviest Dinosaurs");
+        System.out.println("6: Search by Mininum Height");
         in = input.nextInt();
         if(in == 0)
         {
@@ -127,6 +133,22 @@ public class Dino
         else if(in == 2)
         {
           userQuery2(conn, input);
+        }
+        else if (in == 3)
+        {
+          userQuery3(conn,input);
+        }
+        else if (in == 4)
+        {
+          userQuery4(conn);
+        }
+        else if(in == 5)
+        {
+          userQuery5(conn, input);
+        }
+        else if(in == 6)
+        {
+          userQuery6(conn, input);
         }
 
 
@@ -222,8 +244,262 @@ public class Dino
     stmt.close();
     result.close();
 
+    System.out.println("Would you like more information on " + dinoName +"?");
+    System.out.println("1: Yes, 2: No");
+    int answer = input.nextInt();
+    if(answer == 1)
+    {
+      quickFix = input.nextLine();
+      while(true)
+      {
+        String tableName = "";
+        System.out.println("Which Information would you like?");
+        System.out.println("Options: fossil, physical traits, pronunciation, taxonomy, time period ");
+        System.out.println("Enter 'exit' to stop");
+        tableName = input.nextLine();
+        if(tableName.equals("exit"))
+          return;
+        else
+          getTableInfo(conn, input, tableName, dinoName);
+      }
+    }
+    else if(answer == 2)
+    {
+      return;
+    }
+    else 
+    {
+      System.out.println("Invalid Number.");
+      return;
+    }
+ }
 
+ public static void getTableInfo(Connection conn, Scanner input, String table, String dinosaur) throws SQLException
+ {
+    ResultSet result = null;
+    Statement stmt = conn.createStatement();
+    String res = "";
+
+    if(table.equals("fossil"))
+    {
+      res = "select f_fossilData, f_period from Dinosaur, fossil where d_name = \'"+dinosaur+"\'";
+      result = stmt.executeQuery(res);
+
+ 
+      System.out.println("--------------------------------------------------------------------------------------------");
+      if(result.next())
+      {
+        System.out.println("Fossil Data: " + result.getString(1));
+        System.out.println("Time Period: " + result.getString(2));
+        System.out.println("--------------------------------------------------------------------------------------------");   
+      }
+    }
+    else if(table.equals("physical traits"))
+    {
+      res = "select * from physicalTraits where pt_name = \'"+dinosaur+"\'";
+      result = stmt.executeQuery(res);
+      System.out.println("--------------------------------------------------------------------------------------------");
+      if(result.next())
+      {
+        System.out.println("Name: " + result.getString(2));
+        System.out.println("Leg Type: " + result.getString(3));
+        System.out.println("Body Type: " + result.getString(4));
+        System.out.println("Length: " + result.getString(5));
+        System.out.println("Height: " + result.getString(6));
+        System.out.println("Weight: " + result.getString(7));
+        System.out.println("Mouth Type: " + result.getString(8));
+        System.out.println("Defining Trait: " + result.getString(9));
+        System.out.println("Class: " + result.getString(10));
+        System.out.println("--------------------------------------------------------------------------------------------");   
+      }
+    }
+    else if(table.equals("pronunciation"))
+    {
+      res = "select * from pronunciation where p_name = \'"+dinosaur+"\'";
+      result = stmt.executeQuery(res);
+      System.out.println("--------------------------------------------------------------------------------------------");
+      if(result.next())
+      {
+        System.out.println("Name: " + result.getString(1));
+        System.out.println("Enunciation: " + result.getString(2));
+        System.out.println("Meaning: " + result.getString(3));
+        System.out.println("--------------------------------------------------------------------------------------------");   
+      }
+    }
+    else if(table.equals("taxonomy"))
+    {
+      res = "select * from taxonomy where t_genus = \'"+dinosaur+"\'";
+      result = stmt.executeQuery(res);
+      System.out.println("--------------------------------------------------------------------------------------------");
+      if(result.next())
+      {
+        System.out.println("Genus: " + result.getString(1));
+        System.out.println("Species: " + result.getString(2));
+        System.out.println("Family: " + result.getString(3));
+        System.out.println("Order: " + result.getString(4));
+        System.out.println("--------------------------------------------------------------------------------------------");   
+      }
+    }
+    else if(table.equals("time period"))
+    {
+      res = "select tp_comment, tp_name from Dinosaur, timeperiod where d_timeperiod = tp_name and d_name = \'"+dinosaur+"\'";
+      result = stmt.executeQuery(res);
+      System.out.println("--------------------------------------------------------------------------------------------");
+      if(result.next())
+      {
+        System.out.println("Time Period: " + result.getString(2));
+        System.out.println("Info: " + result.getString(1));
+        System.out.println("--------------------------------------------------------------------------------------------");   
+      }
+    }
+    else 
+    {
+      System.out.println("Invalid Table, please choose from available options.");
+      System.out.println("--------------------------------------------------------------------------------------------");
+      return;
+    }
+
+    stmt.close();
+    result.close();
+ }
+ public static void userQuery3(Connection conn, Scanner input) throws SQLException
+ {
+   ResultSet result = null; //initialize results and prepared statement
+   PreparedStatement pre = null;
+   Statement stmt = conn.createStatement();
+
+   String preStmt = "select d_name from Dinosaur, taxonomy where  t_species = ? and d_name = t_genus;";
+   String res = "";
+   String quickFix = input.nextLine();
+
+   pre = conn.prepareStatement(preStmt);
+   String dinoSpecies = ""; // initialize input
+
+   System.out.println("Please Enter Species Name:");
+   System.out.println("Example Format: A. horneri");
+   
+   dinoSpecies = input.nextLine();
+
+   res = "select t_species from taxonomy where t_species = \'"+dinoSpecies+"\'";
+   result = stmt.executeQuery(res);
+   if(result.next())
+   {
+     dinoSpecies = result.getString("t_species");
+   }
+   else
+   {
+     System.out.println("Species not in database.");
+     return;
+   }
+
+   pre.setString(1, dinoSpecies);
+   result = pre.executeQuery();
+   while(result.next())
+   {
+     System.out.println("Name: " + result.getString(1));
+   }
+
+   pre.close();
+   stmt.close();
+   result.close();
+}
+
+public static void userQuery4(Connection conn) throws SQLException
+{
+  System.out.println("Printing out longest dinosaurs of each habitat...");
+  ResultSet result = null;
+  Statement stmt = conn.createStatement();
+
+  String res = "SELECT h_name ,d_name , MAX(pt_length) FROM Dinosaur, physicalTraits, habitat " +
+  "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey " + 
+  "GROUP BY h_name " +
+  "ORDER BY pt_length ASC;";
+
+  result = stmt.executeQuery(res);
+
+  while(result.next())
+  {
+    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println("Habitat: " + result.getString(1));
+    System.out.println("Dinosaur: " + result.getString(2));
+    System.out.println("Length: " + result.getFloat(3));
+    System.out.println("--------------------------------------------------------------------------------------------");
 
   }
+
+  stmt.close();
+  result.close();
+
+}
+
+public static void userQuery5(Connection conn, Scanner input) throws SQLException
+{
+  ResultSet result = null; //initialize results and prepared statement
+  PreparedStatement pre = null;
+  int topNum = 0;
+  int rank = 1;
+
+  String preStmt = "SELECT h_name ,d_name , MAX(pt_weight) " +
+                   "FROM Dinosaur, physicalTraits, habitat " +
+                   "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey and pt_weight != 'unknown' " +
+                   "GROUP BY d_name " +
+                   "ORDER BY pt_weight desc " +
+                   "LIMIT ?;";
+  pre = conn.prepareStatement(preStmt);
+
+  System.out.println("Please Enter Number:");
+  topNum = input.nextInt();
+
+  pre.setInt(1, topNum);
+  result = pre.executeQuery();
+
+  System.out.println("--------------------------------------------------------------------------------------------");
+  while(result.next())
+  {
+    System.out.println("Rank: " + rank);
+    System.out.println("Habitat: " + result.getString(1));
+    System.out.println("Dinosaur: " + result.getString(2));
+    System.out.println("Weight: " + result.getFloat(3));
+    System.out.println("--------------------------------------------------------------------------------------------");
+    rank++;
+
+  }
+
+  pre.close();
+  result.close();
+}
+
+public static void userQuery6(Connection conn, Scanner input) throws SQLException
+{
+  ResultSet result = null; //initialize results and prepared statement
+  PreparedStatement pre = null;
+  int topNum = 0;
+
+  String preStmt = "SELECT d_name , pt_height " +
+                   "FROM Dinosaur, physicalTraits " +
+                   "WHERE d_dinokey = pt_dinokey and pt_height != 'unknown' " +
+                   "GROUP BY d_name " +
+                   "HAVING pt_height >= ?;";
+
+  pre = conn.prepareStatement(preStmt);
+
+  System.out.println("Please Enter Number:");
+  topNum = input.nextInt();
+
+  pre.setInt(1, topNum);
+  result = pre.executeQuery();
+
+  System.out.println("--------------------------------------------------------------------------------------------");
+  while(result.next())
+  {
+    System.out.println("Dinosaur: " + result.getString(1));
+    System.out.println("Height: " + result.getFloat(2));
+    System.out.println("--------------------------------------------------------------------------------------------");
+
+  }
+
+  pre.close();
+  result.close();
+}
 
 }
