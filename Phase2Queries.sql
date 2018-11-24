@@ -1,22 +1,22 @@
-select * 
+select * /* Query in JDBC */
 from Dinosaur;
 
-select *
+select *  /* Query in JDBC */
 from Dinosaur
 where d_name = "Ammosaurus";
 
-select d_name
+select d_name  /* Query in JDBC */
 from Dinosaur, taxonomy
 where  t_species = "A. horneri"
 and d_name = t_genus;
 
-SELECT h_name ,d_name , MAX(pt_length)
+SELECT h_name ,d_name , MAX(pt_length)  /* Query in JDBC */
 FROM Dinosaur, physicalTraits, habitat
 WHERE d_dinokey = pt_dinokey AND h_key = d_habkey
 GROUP BY h_name
 ORDER BY pt_length ASC;
 
-SELECT h_name ,d_name , MAX(pt_weight)
+SELECT h_name ,d_name , MAX(pt_weight)  /* Query in JDBC */
 FROM Dinosaur, physicalTraits, habitat
 WHERE d_dinokey = pt_dinokey AND h_key = d_habkey
 and pt_weight != 'unknown'
@@ -25,7 +25,7 @@ ORDER BY pt_weight desc
 LIMIT 3;
 
 
-SELECT d_name, pt_height 
+SELECT d_name, pt_height   /* Query in JDBC */
 FROM Dinosaur, physicalTraits
 WHERE d_name = pt_name and pt_height != 'unknown' 
 group by d_name 
@@ -47,14 +47,14 @@ from Dinosaur, location
 where l_dinokey like '%21%'
 and d_dinokey = 21;
 
-select d_name, l_nation, h_name, tp_yearsAgo
+select d_name, l_nation, h_name, tp_yearsAgo  /* Query in JDBC */
 from Dinosaur, location, habitat, timeperiod
 where l_dinokey like '%21%'
 and d_dinokey = 21 and h_key = d_habkey
 and d_timeperiod = tp_name;
 
 
-SELECT COUNT(d_name)
+SELECT COUNT(d_name) /* Query in JDBC */
 FROM Dinosaur
 WHERE d_name IN (SELECT d_name FROM Dinosaur, habitat
 WHERE d_habkey = h_key
@@ -69,13 +69,13 @@ from Dinosaur, timeperiod, habitat
 where d_type = "land" and d_habkey = h_key
 and d_timeperiod = tp_name;
 
-SELECT p_name ,p_enunciation, SQ1.maxL
+SELECT p_name ,p_enunciation, SQ1.maxL /* Query in JDBC */
 FROM pronunciation , Dinosaur, (SELECT d_dinokey as maxDino, max(pt_length) as maxL
                                 FROM Dinosaur, physicalTraits
                                 WHERE pt_dinokey = d_dinokey) as SQ1
 WHERE p_name = d_name AND d_dinokey = SQ1.maxDino;
 
-SELECT COUNT(*)
+SELECT COUNT(*)  /* Query in JDBC */
 FROM (SELECT d_name as dName
 FROM Dinosaur, physicalTraits
 WHERE d_type like '%sea%' AND d_dinokey = pt_dinokey
@@ -89,7 +89,7 @@ WHERE d_type like '%sea%' AND d_dinokey = pt_dinokey
 GROUP BY d_name
 HAVING pt_weight > 300 and pt_weight != 'unknown') as SQ1;
 
-SELECT d_name, pt_length
+SELECT d_name, pt_length /* Query in JDBC */
 FROM Dinosaur, physicalTraits
 WHERE d_dinokey = pt_dinokey AND pt_length
 BETWEEN 3.5 AND 6.0 AND d_dinokey IN (

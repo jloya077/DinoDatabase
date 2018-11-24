@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import javax.lang.model.util.ElementScanner6;
-
+/* 11 Queries Done So Far */
 public class Dino
 {
   public static void main(String[] args) throws SQLException, InterruptedException
@@ -121,35 +121,23 @@ public class Dino
         System.out.println("4: Longest Dinosaur from each Habitat");
         System.out.println("5: Search Top Heaviest Dinosaurs");
         System.out.println("6: Search by Mininum Height");
+        System.out.println("7: Number of Dinosaurs based on Habitat & Diet");
+        System.out.println("8: Search number of Dinosaurs based on type");
+        System.out.println("9: Longest Dinosaur in Database");
+        System.out.println("10: Display Dinosaurs in between a selected range");
         in = input.nextInt();
-        if(in == 0)
-        {
-            return;
-        }
-        else if(in == 1)
-        {
-            userQuery1(conn);
-        }
-        else if(in == 2)
-        {
-          userQuery2(conn, input);
-        }
-        else if (in == 3)
-        {
-          userQuery3(conn,input);
-        }
-        else if (in == 4)
-        {
-          userQuery4(conn);
-        }
-        else if(in == 5)
-        {
-          userQuery5(conn, input);
-        }
-        else if(in == 6)
-        {
-          userQuery6(conn, input);
-        }
+
+        if(in == 0){return;}
+        else if(in == 1){userQuery1(conn);}
+        else if(in == 2){userQuery2(conn, input);}
+        else if (in == 3){userQuery3(conn,input);}
+        else if (in == 4){userQuery4(conn);}
+        else if(in == 5){userQuery5(conn, input);}
+        else if(in == 6){userQuery6(conn, input);}
+        else if(in == 7){userQuery7(conn, input);}
+        else if(in == 8){userQuery8(conn, input);}
+        else if(in == 9){userQuery9(conn);}
+        else if(in == 10){userQuery10(conn, input);}
 
 
     }
@@ -521,6 +509,217 @@ public static void userQuery6(Connection conn, Scanner input) throws SQLExceptio
 
   pre.close();
   result.close();
+}
+
+public static void userQuery7(Connection conn, Scanner input) throws SQLException
+{
+  ResultSet result = null; //initialize results and prepared statement
+  PreparedStatement pre = null;
+  Statement stmt = conn.createStatement();
+
+  String quickFix = input.nextLine();
+
+  String res = "";
+  String habName = "";
+  String dietName = "";
+  String preStmt = "SELECT COUNT(d_name) " +
+                   "FROM Dinosaur " +
+                   "WHERE d_name IN (SELECT d_name FROM Dinosaur, habitat " +
+                                    "WHERE d_habkey = h_key " +
+                                    "AND h_name = ? AND d_diet = ?);";
+
+  pre = conn.prepareStatement(preStmt);
+  
+  System.out.println("Please Select Habitat.");
+  System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
+  System.out.println("canyon, river, woodland, swamp, floodplain, unknown");
+
+  habName = input.nextLine();
+  habName = habName.toLowerCase();
+  res = "select h_name from habitat where h_name = \'"+habName+"\'";
+  result = stmt.executeQuery(res);
+  if(result.next())
+    habName = result.getString("h_name");
+  else
+  {
+    System.out.println("Habitat not found");
+    return;
+  }
+
+  System.out.println("Please select Diet type.");
+  System.out.println("Options: herbivore, carnivore");
+  
+  dietName = input.nextLine();
+  dietName = dietName.toLowerCase();
+  res = "select d_diet from dinosaur where d_diet = \'"+dietName+"\'";
+  result = stmt.executeQuery(res);
+  if(result.next())
+    dietName = result.getString("d_diet");
+  else
+  {
+    System.out.println("Diet type not found.");
+    return;
+  }
+
+  pre.setString(1, habName);
+  pre.setString(2, dietName);
+
+  result = pre.executeQuery();
+  if(result.next())
+  {
+    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println("Number of Dinosaurs with diet " + dietName + " and habitat " + habName + ": " + result.getInt(1));
+    System.out.println("--------------------------------------------------------------------------------------------");
+  }
+  else
+  {
+    System.out.println("Statement did not execute.");
+    return;
+  }
+  stmt.close();
+  pre.close();
+  result.close();
+
+}
+
+public static void userQuery8(Connection conn, Scanner input) throws SQLException
+{
+  ResultSet result = null;
+  PreparedStatement pre = null;
+
+  String dinoType = "";
+  String quickFix = input.nextLine();
+  String preStmt = "SELECT COUNT(*) " +
+                   "FROM (SELECT d_name as dName " +
+                   "FROM Dinosaur, physicalTraits " +
+                   "WHERE d_type like ? AND d_dinokey = pt_dinokey " +
+                   "GROUP BY d_name) as SQ1";
+  pre = conn.prepareStatement(preStmt);
+
+  System.out.println("Please enter Dinosaur Type:");
+  System.out.println("Options: Land, Air, Sea");
+
+  dinoType = input.nextLine();
+  dinoType = dinoType.toLowerCase();
+
+  pre.setString(1, "%" + dinoType + "%"); //do this to fill in LIKE keyword
+
+  result = pre.executeQuery();
+  if(result.next())
+  {
+    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println("Number of dinosaurs of " + dinoType + " type: " + result.getInt(1));
+    System.out.println("--------------------------------------------------------------------------------------------");
+  }
+  else
+  {
+    System.out.println("Error in executing Query");
+    return;
+  }
+
+  pre.close();
+  result.close();
+}
+
+public static void userQuery9(Connection conn) throws SQLException
+{
+  ResultSet result = null;
+  Statement stmt = conn.createStatement();
+
+  String res = "SELECT p_name ,p_enunciation, SQ1.maxL " +
+               "FROM pronunciation , Dinosaur, (SELECT d_dinokey as maxDino, max(pt_length) as maxL " +
+                                               "FROM Dinosaur, physicalTraits " +
+                                               "WHERE pt_dinokey = d_dinokey) as SQ1 " +
+                                              "WHERE p_name = d_name AND d_dinokey = SQ1.maxDino;";
+
+  result = stmt.executeQuery(res);
+  
+  System.out.println("--------------------------------------------------------------------------------------------");
+  while(result.next())
+  {
+    System.out.println("Name: " + result.getString(1));
+    System.out.println("Enunciation: " + result.getString(2));
+    System.out.println("Length: " + result.getInt(3));
+    System.out.println("--------------------------------------------------------------------------------------------");
+  }
+  stmt.close();
+  result.close();
+}
+
+public static void userQuery10(Connection conn, Scanner input) throws SQLException
+{
+  ResultSet result = null;
+  PreparedStatement pre = null;
+
+  float min = 0;
+  float max = 0;
+
+  String quickFix = input.nextLine();
+  String trait = "";
+  String attribute = "";
+  String preStmt = "";
+  
+  System.out.println("Please select  measurement type: ");
+  System.out.println("Options: Length, Height, Weight");
+  trait = input.nextLine();
+  trait = formatString(trait);
+
+  if(trait.equals("Length"))
+  {
+    attribute = "pt_length";
+    preStmt = "SELECT d_name, pt_length " +
+                   "FROM Dinosaur, physicalTraits " +
+                   "WHERE d_dinokey = pt_dinokey AND pt_length BETWEEN ? AND ?;";
+  }
+  else if(trait.equals("Height"))
+  {
+    attribute = "pt_height";
+    preStmt = "SELECT d_name, pt_height " +
+    "FROM Dinosaur, physicalTraits " +
+    "WHERE d_dinokey = pt_dinokey AND pt_height BETWEEN ? AND ?;";
+  }
+  else if(trait.equals("Weight"))
+  {
+    attribute = "pt_weight";
+    preStmt = "SELECT d_name, pt_weight " +
+    "FROM Dinosaur, physicalTraits " +
+    "WHERE d_dinokey = pt_dinokey AND pt_weight BETWEEN ? AND ?;";
+   
+  }
+  else
+  {
+    System.out.println("Option not found.");
+    return;
+  }
+
+  pre = conn.prepareStatement(preStmt);
+  System.out.print("Please enter mininum: ");
+  min = input.nextFloat();
+  System.out.println();
+
+  System.out.print("Please enter maximum: ");
+  max = input.nextFloat();
+  System.out.println();
+
+  pre.setFloat(1, min);
+  pre.setFloat(2, max);
+
+  result = pre.executeQuery();
+
+  System.out.println("--------------------------------------------------------------------------------------------");
+  while(result.next())
+  {
+    System.out.println("Name: " + result.getString(1));
+    System.out.println(trait + ": " + result.getFloat(2));
+    System.out.println("--------------------------------------------------------------------------------------------");
+
+
+  }
+
+  pre.close();
+  result.close();
+
+
 }
 
 }
