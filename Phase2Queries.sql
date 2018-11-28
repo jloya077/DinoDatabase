@@ -31,7 +31,7 @@ WHERE d_name = pt_name and pt_height != 'unknown'
 group by d_name 
 having pt_height > 3;
 
-SELECT t_species
+SELECT t_species /* Query in JDBC */
 FROM taxonomy, Dinosaur
 WHERE t_dinokey = d_dinokey and d_habkey IN (SELECT h_key FROM habitat WHERE h_name = "forest");
 

@@ -4,9 +4,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.lang.model.util.ElementScanner6;
-/* 12 Queries Done So Far */
+/* 14 Queries Done So Far */
 public class Dino
 {
+   protected static Boolean histLogin = false;
+
   public static void main(String[] args) throws SQLException, InterruptedException
   {
     Connection connection = null;
@@ -20,10 +22,14 @@ public class Dino
         System.out.println("-------DinoDatabase Main Menu--------");
         System.out.println("0: Quit Program");
         System.out.println("1: Connect to DinoDatabase");
-        System.out.println("2: Display Search Options");
+        System.out.println("2: Historian Login");
+        System.out.println("3: Display Search Options");
+        System.out.println("4: Log Out");
         System.out.println("10: Disconnect from Database");
-        System.out.println("Please enter desired option:");
+        System.out.print("Please enter desired option: ");
+
         in = input.nextInt();
+        System.out.println();
         if(in == 0)
         {
           System.out.println("Quitting Program...Goodbye");
@@ -38,8 +44,17 @@ public class Dino
         }
         else if(in == 2)
         {
+            userLogin(input);
+        }
+        else if(in == 3)
+        {
             System.out.println("Displaying Search Options");
             userMenu(connection, input);
+        }
+        else if(in == 4)
+        {
+            histLogin = false;
+            System.out.println("Logout Successful.");
         }
         else if(in == 10)
         { 
@@ -102,6 +117,31 @@ public class Dino
     return in;
 
   }
+  public static void userLogin(Scanner input)
+  {
+      String login = "";
+      String password = "";
+      String quickFix = input.nextLine();
+
+      System.out.print("Please Enter User Name: ");
+      login = input.nextLine();
+      System.out.println("");
+
+      System.out.print("Please Enter User Password: ");
+      password = input.nextLine();
+      System.out.println("");
+
+      if(login.equals("DinoDude") && password.equals("DinosRcool"))
+      {
+        histLogin = true;
+        System.out.println("Login Successful.");
+        System.out.println("Welcome " + login);
+      }
+     else
+        System.out.println("User Name or Password is Incorrect.");
+
+
+  }
   public static void userTableInfo(Connection conn, Scanner input, String dinoName) throws SQLException
   {
     String quickFix = input.nextLine();
@@ -111,7 +151,11 @@ public class Dino
       System.out.println("Which Information would you like?");
       System.out.println("Options: dinosaur, fossil, physical traits, pronunciation, taxonomy, time period ");
       System.out.println("Enter 'exit' to stop");
+      
+      System.out.println("Enter Table: ");
       tableName = input.nextLine();
+      System.out.println();
+
       if(tableName.equals("exit"))
         return;
       else
@@ -274,7 +318,15 @@ public class Dino
         System.out.println("9: Search number of Dinosaurs based on type");
         System.out.println("10: Longest Dinosaur in Database");
         System.out.println("11: Display Dinosaurs in between a selected range");
+        System.out.println("12: Display Dinosaur Species based on habitat");
+        if(histLogin)
+        {
+            System.out.println("13: Submit a Request");        
+        }
+
+        System.out.print("Enter Option: ");
         in = input.nextInt();
+        System.out.println();
 
         if(in == 0){return;}
         else if(in == 1){userQuery1(conn, input);}
@@ -288,6 +340,8 @@ public class Dino
         else if(in == 9){userQuery9(conn, input);}
         else if(in == 10){userQuery10(conn);}
         else if(in == 11){userQuery11(conn, input);}
+        else if(in == 12){userQuery12(conn, input);}
+        else{System.out.println("Invalid Option, Please Try Again.");}
 
     }
   }
@@ -337,7 +391,7 @@ public class Dino
     else 
     {
       System.out.println("Invalid Number.");
-      return;
+      //return;
     }
 
 
@@ -356,7 +410,7 @@ public class Dino
     String quickFix = input.nextLine(); //for some reason input skips over, doing this fixes it.
 
     String preStmt = 
-    "select d_name, l_nation, h_name, tp_yearsAgo from Dinosaur, location, habitat, timeperiod where l_dinokey like ? and d_dinokey = ? and h_key = d_habkey and d_timeperiod = tp_name and d_name = ?";
+    "select d_name, l_nation, h_name, tp_yearsAgo from Dinosaur, location, habitat, timeperiod where l_dinokey like ? and d_dinokey = ? and h_key = d_habkey and d_timeperiod = tp_name and d_name = ?"; //5
 
     pre = conn.prepareStatement(preStmt);
 
@@ -435,7 +489,7 @@ public class Dino
    PreparedStatement pre = null;
    Statement stmt = conn.createStatement();
 
-   String preStmt = "select d_name from Dinosaur, taxonomy where  t_species = ? and d_name = t_genus;";
+   String preStmt = "select d_name from Dinosaur, taxonomy where  t_species = ? and d_name = t_genus;"; //6
    String res = "";
    String quickFix = input.nextLine();
 
@@ -477,7 +531,7 @@ public static void userQuery5(Connection conn) throws SQLException
   ResultSet result = null;
   Statement stmt = conn.createStatement();
 
-  String res = "SELECT h_name ,d_name , MAX(pt_length) FROM Dinosaur, physicalTraits, habitat " +
+  String res = "SELECT h_name ,d_name , MAX(pt_length) FROM Dinosaur, physicalTraits, habitat " + //7
   "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey " + 
   "GROUP BY h_name " +
   "ORDER BY pt_length ASC;";
@@ -506,7 +560,7 @@ public static void userQuery6(Connection conn, Scanner input) throws SQLExceptio
   int topNum = 0;
   int rank = 1;
 
-  String preStmt = "SELECT h_name ,d_name , MAX(pt_weight) " +
+  String preStmt = "SELECT h_name ,d_name , MAX(pt_weight) " + //8
                    "FROM Dinosaur, physicalTraits, habitat " +
                    "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey and pt_weight != 'unknown' " +
                    "GROUP BY d_name " +
@@ -542,7 +596,7 @@ public static void userQuery7(Connection conn, Scanner input) throws SQLExceptio
   PreparedStatement pre = null;
   float topNum = 0;
 
-  String preStmt = "SELECT d_name , pt_height " +
+  String preStmt = "SELECT d_name , pt_height " + //9
                    "FROM Dinosaur, physicalTraits " +
                    "WHERE d_dinokey = pt_dinokey and pt_height != 'unknown' " +
                    "GROUP BY d_name " +
@@ -580,20 +634,21 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
   String res = "";
   String habName = "";
   String dietName = "";
-  String preStmt = "SELECT COUNT(d_name) " +
+  String preStmt = "SELECT COUNT(d_name) " + //10
                    "FROM Dinosaur " +
                    "WHERE d_name IN (SELECT d_name FROM Dinosaur, habitat " +
                                     "WHERE d_habkey = h_key " +
                                     "AND h_name = ? AND d_diet = ?);";
 
   pre = conn.prepareStatement(preStmt);
-  
-  System.out.println("Please Select Habitat.");
   System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
   System.out.println("canyon, river, woodland, swamp, floodplain, unknown");
+  System.out.print("Please Select Habitat: ");
 
   habName = input.nextLine();
   habName = habName.toLowerCase();
+  System.out.println();
+
   res = "select h_name from habitat where h_name = \'"+habName+"\'";
   result = stmt.executeQuery(res);
   if(result.next())
@@ -647,7 +702,7 @@ public static void userQuery9(Connection conn, Scanner input) throws SQLExceptio
 
   String dinoType = "";
   String quickFix = input.nextLine();
-  String preStmt = "SELECT COUNT(*) " +
+  String preStmt = "SELECT COUNT(*) " + //11
                    "FROM (SELECT d_name as dName " +
                    "FROM Dinosaur, physicalTraits " +
                    "WHERE d_type like ? AND d_dinokey = pt_dinokey " +
@@ -684,7 +739,7 @@ public static void userQuery10(Connection conn) throws SQLException
   ResultSet result = null;
   Statement stmt = conn.createStatement();
 
-  String res = "SELECT p_name ,p_enunciation, SQ1.maxL " +
+  String res = "SELECT p_name ,p_enunciation, SQ1.maxL " + //12
                "FROM pronunciation , Dinosaur, (SELECT d_dinokey as maxDino, max(pt_length) as maxL " +
                                                "FROM Dinosaur, physicalTraits " +
                                                "WHERE pt_dinokey = d_dinokey) as SQ1 " +
@@ -724,7 +779,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
   if(trait.equals("Length"))
   {
-    attribute = "pt_length";
+    attribute = "pt_length"; //13
     preStmt = "SELECT d_name, pt_length " +
                    "FROM Dinosaur, physicalTraits " +
                    "WHERE d_dinokey = pt_dinokey AND pt_length BETWEEN ? AND ?;";
@@ -776,8 +831,59 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
   pre.close();
   result.close();
-
-
 }
+
+  public static void userQuery12(Connection conn, Scanner input) throws SQLException
+  {
+    ResultSet result = null;
+    PreparedStatement pre = null;
+    Statement stmt = conn.createStatement();
+    
+    String quickFix = input.nextLine();
+    String res = "";
+    String habName = "";
+    
+    String preStmt = "SELECT d_name, t_species " +
+                     "FROM taxonomy, Dinosaur " +
+                     "WHERE t_dinokey = d_dinokey and d_habkey IN (SELECT h_key FROM habitat WHERE h_name = ?);";
+    pre = conn.prepareStatement(preStmt);
+    
+    System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
+    System.out.println("canyon, river, woodland, swamp, floodplain, unknown");
+    System.out.print("Please Select Habitat: ");
+  
+    habName = input.nextLine();
+    habName = habName.toLowerCase();
+    System.out.println();
+
+    res = "select h_name from habitat where h_name = \'"+habName+"\'";
+    result = stmt.executeQuery(res);
+    if(result.next())
+      habName = result.getString("h_name");
+    else
+    {
+      System.out.println("Habitat not found");
+      return;
+    }
+    
+    pre.setString(1, habName);
+
+    result = pre.executeQuery();
+
+    System.out.println("--------------------------------------------------------------------------------------------");
+    while(result.next())
+    {
+        System.out.println("Name: " + result.getString(1));
+        System.out.println("Species: " + result.getString(2));
+        System.out.println("Habitat: " + habName);
+        System.out.println("--------------------------------------------------------------------------------------------");
+    }
+
+    stmt.close();
+    result.close();
+    pre.close();
+    
+  
+  }
 
 }
