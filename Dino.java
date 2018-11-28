@@ -8,6 +8,7 @@ import javax.lang.model.util.ElementScanner6;
 public class Dino
 {
    protected static Boolean histLogin = false;
+   protected static Boolean adminLogin = false;
 
   public static void main(String[] args) throws SQLException, InterruptedException
   {
@@ -289,6 +290,26 @@ public class Dino
          System.out.println("--------------------------------------------------------------------------------------------");   
        }
      }
+     else if(table.equals("requests") && (histLogin || adminLogin))
+     {
+       if(dinosaur.equals("all"))
+        res = "select * from requests";
+       else
+        res = "select * from requests where r_name = \'"+dinosaur+"\'";
+
+        result = stmt.executeQuery(res);
+        System.out.println("--------------------------------------------------------------------------------------------");
+        while(result.next())
+        {
+          System.out.println("Name: " + result.getString(1));
+          System.out.println("Table Name: " + result.getString(2));
+          System.out.println("Comment 1: " + result.getString(3));
+          System.out.println("Comment 2: " + result.getString(4));
+          System.out.println("Update Status: " + result.getString(5));
+          System.out.println("--------------------------------------------------------------------------------------------");   
+        }
+
+     }
      else 
      {
        System.out.println("Invalid Table, please choose from available options.");
@@ -321,7 +342,9 @@ public class Dino
         System.out.println("12: Display Dinosaur Species based on habitat");
         if(histLogin)
         {
-            System.out.println("13: Submit a Request");        
+            System.out.println("13: Submit a Request");
+            System.out.println("14: Look up Request Update Status.");
+            System.out.println("15: Look up Request Update Status by Dinosaur");        
         }
 
         System.out.print("Enter Option: ");
@@ -341,6 +364,13 @@ public class Dino
         else if(in == 10){userQuery10(conn);}
         else if(in == 11){userQuery11(conn, input);}
         else if(in == 12){userQuery12(conn, input);}
+        else if(histLogin)
+        {
+          if(in == 13){histQuery1(conn, input);}
+          if(in == 14){getTableInfo(conn, input, "requests", "all");}
+          if(in == 15){histQuery2(conn, input);}
+
+        }
         else{System.out.println("Invalid Option, Please Try Again.");}
 
     }
@@ -885,5 +915,77 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     
   
   }
+
+  public static void histQuery1(Connection conn, Scanner input) throws SQLException
+  {
+    ResultSet result = null;
+    PreparedStatement pre = null;
+    Statement stmt = conn.createStatement();
+
+    String quickFix = input.nextLine();
+    String preStmt = "insert into requests " +
+                     "values(?, ?, ?, ?, ?)";
+    
+    pre = conn.prepareStatement(preStmt);
+    String res, dinoName, tableName, comment1, comment2 = "";
+    
+    System.out.println("Please Enter Dinosaur Name: ");
+    System.out.println("Enter N/A if not applicable");
+    dinoName = input.nextLine();
+    
+    if(!(dinoName.equals("N/A")))
+    {
+      res = "select d_name from Dinosaur where d_name = \'"+dinoName+"\'";
+      result = stmt.executeQuery(res);
+      if(result.next())
+        dinoName = result.getString(1);
+      else
+      {
+        System.out.println("Dinosaur Not Found.");
+        return;
+      }
+    }
+
+    
+    System.out.println("Options: Dinosaur, Fossil, Habitat, Location, Physical Traits, Pronunciation, Taxonomy, Time Period");
+    System.out.print("Please Enter Table Name: ");
+    tableName = input.nextLine();
+    System.out.println();
+
+    System.out.print("Please Enter 1st Comment: ");
+    comment1 = input.nextLine();
+    System.out.println();
+
+    System.out.print("Please Enter 2nd Comment: ");
+    comment2 = input.nextLine();
+    System.out.println();
+
+    pre.setString(1, dinoName);
+    pre.setString(2, tableName);
+    pre.setString(3, comment1);
+    pre.setString(4, comment2);
+    pre.setString(5, "f");
+
+    pre.executeUpdate();
+
+    System.out.println("Request Submitted.");
+
+    result.close();
+    pre.close();
+    stmt.close();
+}
+
+  public static void histQuery2(Connection conn, Scanner input) throws SQLException
+  { 
+    String res, dinoName = "";
+    String quickFix = input.nextLine();
+
+    System.out.print("Please Enter Dinosaur Name: ");
+    dinoName = input.nextLine();
+    dinoName = formatString(dinoName);
+
+    getTableInfo(conn, input, "requests", dinoName);
+  }
+
 
 }
