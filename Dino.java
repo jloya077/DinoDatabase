@@ -131,9 +131,9 @@ public class Dino
      if(table.equals("dinosaur"))
      {
        if(dinosaur.equals("all"))
-        res = "select * from Dinosaur";
+        res = "select * from Dinosaur"; //1
       else
-       res = "select * " +
+       res = "select * " +              //2
              "from Dinosaur " +
              "where d_name = \'"+dinosaur+"\'";
              
@@ -155,7 +155,7 @@ public class Dino
      else if(table.equals("fossil"))
      {
        if(dinosaur.equals("all"))
-        res =  "select d_name, f_fossilData, f_fossilEvidence, f_period from Dinosaur, fossil where d_dinokey = f_dinokey";
+        res =  "select d_name, f_fossilData, f_fossilEvidence, f_period from Dinosaur, fossil where d_dinokey = f_dinokey"; //3
        else
         res = "select d_name, f_fossilData, f_fossilEvidence, f_period from Dinosaur, fossil where d_dinokey = f_dinokey and d_name = \'"+dinosaur+"\'";
        
@@ -301,7 +301,7 @@ public class Dino
     String dinoName = "";
     String in = "";
 
-    res = "select max(d_dinokey) from Dinosaur";
+    res = "select max(d_dinokey) from Dinosaur"; //4
     result = stmt.executeQuery(res);
     if(result.next())
     {
