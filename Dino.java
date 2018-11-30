@@ -1,10 +1,10 @@
 import java.sql.*;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.lang.model.util.ElementScanner6;
-/* 14 Queries Done So Far */
+/* 17 Queries Done So Far */
 public class Dino
 {
    protected static Boolean histLogin = false;
@@ -13,57 +13,55 @@ public class Dino
   public static void main(String[] args) throws SQLException, InterruptedException
   {
     Connection connection = null;
+    connection = connectDatabase(connection);
     Scanner input = new Scanner(System.in);
+    System.out.println("Welcome To DinoDatabase!");
     try
     {
-      int in;
+      int in = -1;
       while(true)
       {
         TimeUnit.SECONDS.sleep(2);
         System.out.println("-------DinoDatabase Main Menu--------");
         System.out.println("0: Quit Program");
-        System.out.println("1: Connect to DinoDatabase");
-        System.out.println("2: Historian Login");
-        System.out.println("3: Display Search Options");
-        System.out.println("4: Log Out");
-        System.out.println("10: Disconnect from Database");
+        System.out.println("1: Log in");
+        System.out.println("2: Display Search Options");
+        System.out.println("3: Log Out");
+        System.out.println("-------------------------------------");
         System.out.print("Please enter desired option: ");
 
-        in = input.nextInt();
+        try
+        {
+          in = input.nextInt();
+        }
+        catch(InputMismatchException e)
+        {
+          System.out.println("Invalid Input, Please Try Again.");
+          input = new Scanner(System.in);
+        }
+
         System.out.println();
         if(in == 0)
         {
           System.out.println("Quitting Program...Goodbye");
+          disconnectDatabase(connection, input);
           break;
         }
         else if(in == 1)
         {
-          System.out.println("Connecting to DinoDatabase...");
-          connection = connectDatabase(connection);
-          System.out.println("Connected to DinoDatabase.");
-
-        }
-        else if(in == 2)
-        {
             userLogin(input);
         }
-        else if(in == 3)
+        else if(in == 2)
         {
             System.out.println("Displaying Search Options");
             userMenu(connection, input);
         }
-        else if(in == 4)
+        else if(in == 3)
         {
             histLogin = false;
             System.out.println("Logout Successful.");
         }
-        else if(in == 10)
-        { 
-          System.out.println("Disconnecting From Database...");
-          disconnectDatabase(connection, input);
-          
-        }
-        else if(in > 10)
+        else if(in > 3)
         {
           System.out.println("Invalid value entered, please try again");
         }
@@ -295,7 +293,7 @@ public class Dino
        if(dinosaur.equals("all"))
         res = "select * from requests";
        else
-        res = "select * from requests where r_name = \'"+dinosaur+"\'";
+        res = "select * from requests where r_name = \'"+dinosaur+"\' and r_updatestatus = 'f'"; //15
 
         result = stmt.executeQuery(res);
         System.out.println("--------------------------------------------------------------------------------------------");
@@ -322,7 +320,7 @@ public class Dino
   }
   public static void userMenu(Connection conn, Scanner input) throws SQLException, InterruptedException
   {
-    int in = 0;
+    int in = -1;
     while(true)
     {
         TimeUnit.SECONDS.sleep(2);
@@ -340,15 +338,26 @@ public class Dino
         System.out.println("10: Longest Dinosaur in Database");
         System.out.println("11: Display Dinosaurs in between a selected range");
         System.out.println("12: Display Dinosaur Species based on habitat");
+        System.out.println("13: Display Dinosaurs based on Body Type");
+        System.out.println("14: Display Dinosaurs based on Mouth Type, Diet Type, and Movement");
         if(histLogin)
         {
-            System.out.println("13: Submit a Request");
-            System.out.println("14: Look up Request Update Status.");
-            System.out.println("15: Look up Request Update Status by Dinosaur");        
+            System.out.println("15: Submit a Request");
+            System.out.println("16: Look up Request Update Status.");
+            System.out.println("17: Look up Request Update Status by Dinosaur");        
         }
+        System.out.println("------------------------");
+        System.out.print("Please enter desired option: ");
 
-        System.out.print("Enter Option: ");
-        in = input.nextInt();
+        try
+        {
+          in = input.nextInt();
+        }
+        catch(InputMismatchException e)
+        {
+          System.out.println("Invalid Input, Please Try Again.");
+          input = new Scanner(System.in);
+        }
         System.out.println();
 
         if(in == 0){return;}
@@ -364,11 +373,13 @@ public class Dino
         else if(in == 10){userQuery10(conn);}
         else if(in == 11){userQuery11(conn, input);}
         else if(in == 12){userQuery12(conn, input);}
+        else if(in == 13){userQuery13(conn, input);}
+        else if(in == 14){userQuery14(conn, input);}
         else if(histLogin)
         {
-          if(in == 13){histQuery1(conn, input);}
-          if(in == 14){getTableInfo(conn, input, "requests", "all");}
-          if(in == 15){histQuery2(conn, input);}
+          if(in == 15){histQuery1(conn, input);}
+          if(in == 16){getTableInfo(conn, input, "requests", "all");}
+          if(in == 17){histQuery2(conn, input);}
 
         }
         else{System.out.println("Invalid Option, Please Try Again.");}
@@ -711,7 +722,7 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
   if(result.next())
   {
     System.out.println("--------------------------------------------------------------------------------------------");
-    System.out.println("Number of Dinosaurs with diet " + dietName + " and habitat " + habName + ": " + result.getInt(1));
+    System.out.println("Number of Dinosaurs with " + dietName + " diet and "+ habName + " habitat: " + result.getInt(1));
     System.out.println("--------------------------------------------------------------------------------------------");
   }
   else
@@ -914,6 +925,98 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     pre.close();
     
   
+  }
+
+  public static void userQuery13(Connection conn, Scanner input) throws SQLException
+  {
+    ResultSet result = null;
+    PreparedStatement pre = null;
+
+    String preStmt = "select d_name, pt_body, pt_length, tp_name " +
+                      "from Dinosaur, timeperiod, physicalTraits " +
+                      "where d_timeperiod = tp_name and d_dinokey = pt_dinokey " +
+                      "and pt_body like ?;";
+
+    String quickFix = input.nextLine();
+    String bodyType = "";
+
+    System.out.print("Please Enter Desired Body Type: ");
+    bodyType = input.nextLine();
+    System.out.println();
+
+    pre = conn.prepareStatement(preStmt);
+    pre.setString(1, "%" + bodyType + "%");
+
+    result = pre.executeQuery();
+
+    System.out.println("--------------------------------------------------------------------------------------------");
+    while(result.next())
+    {
+      System.out.println("Name: " + result.getString(1));
+      System.out.println("Body: " + result.getString(2));
+      System.out.println("Length: " + result.getFloat(3));
+      System.out.println("Time Period: " + result.getString(4));
+      System.out.println("--------------------------------------------------------------------------------------------");
+    }
+    
+  }
+
+  public static void userQuery14(Connection conn, Scanner input) throws SQLException
+  {
+    ResultSet result = null;
+    PreparedStatement pre = null;
+
+    String quickFix = input.nextLine();
+    String mvmtType, mouthType, dietType = "";
+
+    String preStmt =  "select d_name, d_type, d_diet, pt_mouth, tp_name " + //17 
+                      "from Dinosaur, habitat, timeperiod, physicalTraits " +
+                      "where d_habkey = h_key and d_type = ? " +
+                      "INTERSECT " +
+                      "select d_name, d_type, d_diet, pt_mouth, tp_name " +
+                      "from Dinosaur, fossil, timeperiod, physicalTraits " +
+                      "where  d_timeperiod = tp_name and f_dinokey = d_dinokey " +
+                      "and pt_mouth like ? and d_name = pt_name " +
+                      "group by d_name " + 
+                      "having d_diet = ?;";
+    pre = conn.prepareStatement(preStmt);
+
+    System.out.println("Options: Land, Air, Water");
+    System.out.print("Please Enter Movement Type: ");
+    mvmtType = input.nextLine();
+    mvmtType = mvmtType.toLowerCase();
+
+    System.out.println();
+    System.out.print("Please Enter Mouth Type: ");
+    mouthType = input.nextLine();
+    mouthType = mouthType.toLowerCase();
+    System.out.println();
+
+    System.out.print("Please Enter Diet Type: ");
+    dietType = input.nextLine();
+    dietType = dietType.toLowerCase();
+    System.out.println();
+
+    pre.setString(1, mvmtType);
+    pre.setString(2, "%" + mouthType + "%");
+    pre.setString(3, dietType);
+
+    result = pre.executeQuery();
+
+    System.out.println("--------------------------------------------------------------------------------------------");
+    while(result.next())
+    {
+      System.out.println("Name: " + result.getString(1));
+      System.out.println("Movement Type: " + result.getString(2));
+      System.out.println("Diet: " + result.getString(3));
+      System.out.println("Mouth: " + result.getString(4));
+      System.out.println("Time Period: " + result.getString(5));
+      System.out.println("--------------------------------------------------------------------------------------------");
+    }
+
+    result.close();
+    pre.close();
+
   }
 
   public static void histQuery1(Connection conn, Scanner input) throws SQLException

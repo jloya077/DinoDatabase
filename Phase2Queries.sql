@@ -35,7 +35,7 @@ SELECT t_species /* Query in JDBC */
 FROM taxonomy, Dinosaur
 WHERE t_dinokey = d_dinokey and d_habkey IN (SELECT h_key FROM habitat WHERE h_name = "forest");
 
-Select d_name, pt_body, pt_length, tp_name
+Select d_name, pt_body, pt_length, tp_name /* Query in JDBC */
 From Dinosaur, timeperiod, physicalTraits
 Where d_timeperiod = tp_name and d_dinokey = pt_dinokey
 And pt_body like "%large%"
@@ -99,7 +99,7 @@ WHERE d_dinokey = t_dinokey AND
 t_order = 'prolacertiformes')
 GROUP BY d_dinokey;
 
-select d_name, tp_name 
+select d_name, tp_name /* Query in JDBC */
 from Dinosaur, habitat, timeperiod
 where d_habkey = h_key and d_type = 'land'
 INTERSECT
@@ -111,7 +111,7 @@ group by d_name
 having d_diet = 'herbivore';
 
 
-Select *
+Select * /*Query in JDBC */
 From requests 
 Where r_name = 'Albertaceratops' and r_updatestatus = 'f';
 
