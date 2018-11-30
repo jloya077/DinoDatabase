@@ -9,6 +9,7 @@ public class Dino
 {
    protected static Boolean histLogin = false;
    protected static Boolean adminLogin = false;
+   protected static String login;
 
   public static void main(String[] args) throws SQLException, InterruptedException
   {
@@ -49,7 +50,7 @@ public class Dino
         }
         else if(in == 1)
         {
-            userLogin(input);
+            userLogin(connection, input);
         }
         else if(in == 2)
         {
@@ -59,7 +60,10 @@ public class Dino
         else if(in == 3)
         {
             histLogin = false;
+            adminLogin = false;
             System.out.println("Logout Successful.");
+            System.out.println("Goodbye " + login);
+            login = "";
         }
         else if(in > 3)
         {
@@ -116,11 +120,17 @@ public class Dino
     return in;
 
   }
-  public static void userLogin(Scanner input)
+  public static void userLogin(Connection conn, Scanner input) throws SQLException
   {
-      String login = "";
-      String password = "";
+      ResultSet result = null;
+      PreparedStatement pre = null;
+
+      String password, type = "";
       String quickFix = input.nextLine();
+
+      String preStmt = "select * " +
+                       "from userbase " +
+                       "where u_username = ? and u_password = ?;";
 
       System.out.print("Please Enter User Name: ");
       login = input.nextLine();
@@ -130,11 +140,24 @@ public class Dino
       password = input.nextLine();
       System.out.println("");
 
-      if(login.equals("DinoDude") && password.equals("DinosRcool"))
+      pre = conn.prepareStatement(preStmt);
+
+      pre.setString(1, login);
+      pre.setString(2, password);
+
+      result = pre.executeQuery();
+
+      if(result.next())
       {
-        histLogin = true;
+        type = result.getString("u_type");
+        if(type.equals("HIST"))
+          histLogin = true;
+        else if(type.equals("ADMIN"))
+          adminLogin = true;
+
         System.out.println("Login Successful.");
         System.out.println("Welcome " + login);
+        
       }
      else
         System.out.println("User Name or Password is Incorrect.");
