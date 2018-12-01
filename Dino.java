@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
 /* 17 Queries Done So Far */
-public class Dino
+public class Dino 
 {
    protected static Boolean histLogin = false;
    protected static Boolean adminLogin = false;
@@ -363,11 +363,15 @@ public class Dino
         System.out.println("12: Display Dinosaur Species based on habitat");
         System.out.println("13: Display Dinosaurs based on Body Type");
         System.out.println("14: Display Dinosaurs based on Mouth Type, Diet Type, and Movement");
-        if(histLogin)
+        if(histLogin || adminLogin)
         {
             System.out.println("15: Submit a Request");
             System.out.println("16: Look up Request Update Status.");
             System.out.println("17: Look up Request Update Status by Dinosaur");        
+        }
+        if(adminLogin)
+        {
+          System.out.println("18: Delete Dinosaur From Database.");
         }
         System.out.println("------------------------");
         System.out.print("Please enter desired option: ");
@@ -398,12 +402,17 @@ public class Dino
         else if(in == 12){userQuery12(conn, input);}
         else if(in == 13){userQuery13(conn, input);}
         else if(in == 14){userQuery14(conn, input);}
-        else if(histLogin)
+        if(histLogin || adminLogin)
         {
           if(in == 15){histQuery1(conn, input);}
           if(in == 16){getTableInfo(conn, input, "requests", "all");}
           if(in == 17){histQuery2(conn, input);}
 
+        }
+        if(adminLogin)
+        {
+          if(in == 18){deleteInfo(conn,input);}
+          
         }
         else{System.out.println("Invalid Option, Please Try Again.");}
 
@@ -473,8 +482,7 @@ public class Dino
 
     String quickFix = input.nextLine(); //for some reason input skips over, doing this fixes it.
 
-    String preStmt = 
-    "select d_name, l_nation, h_name, tp_yearsAgo from Dinosaur, location, habitat, timeperiod where l_dinokey like ? and d_dinokey = ? and h_key = d_habkey and d_timeperiod = tp_name and d_name = ?"; //5
+    String preStmt = "select d_name, l_nation, h_name, tp_yearsAgo from Dinosaur, location, habitat, timeperiod where l_dinokey like ? and d_dinokey = ? and h_key = d_habkey and d_timeperiod = tp_name and d_name = ?"; //5
 
     pre = conn.prepareStatement(preStmt);
 
@@ -1113,5 +1121,41 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     getTableInfo(conn, input, "requests", dinoName);
   }
 
+  public static void deleteInfo(Connection conn, Scanner input) throws SQLException
+  {
+    
+    PreparedStatement pre = null;
+    String quickFix = input.nextLine();
+    String dinoName = "";
+    String uSure = "";
 
+    String preStmt = "delete from Dinosaur where d_name = ?;";
+    pre = conn.prepareStatement(preStmt);
+
+    System.out.print("Please Enter Dinosaur to delete: ");
+    dinoName = input.nextLine();
+    System.out.println();
+
+    System.out.println("Are you sure you want to delete " + dinoName + " from database");
+    System.out.println("Enter 'Yes' or 'No' ");
+    uSure = input.nextLine();
+    uSure = uSure.toLowerCase();
+
+    if(uSure.equals("yes"))
+    {
+      pre.setString(1, dinoName);
+      pre.executeUpdate();
+
+      System.out.println(dinoName + " deleted.");
+      
+    }
+    else if(uSure.equals("no"))
+      System.out.println("Delete Operation Cancelled.");
+    else 
+      System.out.println("Invalid Input");
+    
+    pre.close();
+    return;
+  
+  }
 }
