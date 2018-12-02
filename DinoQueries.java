@@ -4,8 +4,152 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
+/* This class contains modification statements of admin, and queries used across the program. */
 public class DinoQueries
 {
+    //Terminal Colors
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
+    public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
+    //Terminal Colors End
+
+    //Queries Used UserTableInfo
+    protected static String logCheck = "select * from userbase where u_username = ? and u_password = ?;"; //1
+    protected static String selFossil = "select d_name, f_fossilData, f_fossilEvidence, f_period from Dinosaur, fossil where d_dinokey = f_dinokey"; //2
+    protected static String selDino = "select * from Dinosaur"; //3
+    protected static String selFossil2 = "select * from fossil";
+    protected static String selPhysTrait = "select * from physicalTraits"; 
+    protected static String selPronounce = "select * from pronunciation";
+    protected static String selTax = "select * from taxonomy";
+    protected static String selTime = "select tp_comment, tp_name from timeperiod"; //4
+    protected static String selRequest =  "select * from requests";
+    //UserTableInfo Queries End
+
+    //Queries UserQuery1
+    protected static String maxDinoKey = "select max(d_dinokey) from Dinosaur"; //5
+    //Queries UserQuery1 End
+
+    //Queries UserQuery3
+    protected static String findDino = "select d_name, l_nation, h_name, tp_yearsAgo from Dinosaur, location, habitat, timeperiod where l_dinokey like ? and d_dinokey = ? and h_key = d_habkey and d_timeperiod = tp_name and d_name = ?"; //6
+    //Queries UserQuery3 End
+
+    //Queries UserQuery4
+    protected static String findSpecies = "select d_name from Dinosaur, taxonomy where  t_species = ? and d_name = t_genus;"; //7
+    //Queries UserQuery4 End
+
+    //Queries UserQuery5
+    protected static String longDinos = "SELECT h_name ,d_name , MAX(pt_length) FROM Dinosaur, physicalTraits, habitat " + //8
+                                        "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey " + 
+                                        "GROUP BY h_name " +
+                                        "ORDER BY pt_length ASC;";
+    //Queries UserQuery5 End
+
+    //Queries UserQuery6
+    protected static String topHeavy = "SELECT h_name ,d_name , MAX(pt_weight) " + //9
+                                        "FROM Dinosaur, physicalTraits, habitat " +
+                                        "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey and pt_weight != 'unknown' " +
+                                        "GROUP BY d_name " +
+                                        "ORDER BY pt_weight desc " +
+                                        "LIMIT ?;";
+    //Queries UserQuery6 End
+
+    //Queries UserQuery7
+    protected static String minHeight = "SELECT d_name , pt_height " + //10
+                                        "FROM Dinosaur, physicalTraits " +
+                                        "WHERE d_dinokey = pt_dinokey and pt_height != 'unknown' " +
+                                        "GROUP BY d_name " +
+                                        "HAVING pt_height >= ?;";
+    //Queries UserQuery7 End
+
+    //Queries UserQuery8
+    protected static String numDinosHabDiet = "SELECT COUNT(d_name) " + //11
+                                              "FROM Dinosaur " +
+                                              "WHERE d_name IN (SELECT d_name FROM Dinosaur, habitat " +
+                                              "WHERE d_habkey = h_key " +
+                                              "AND h_name = ? AND d_diet = ?);";
+    //Queries UserQuery8 End
+
+    //Queries UserQuery9
+    protected static String numDinosType = "SELECT COUNT(*) " + //12
+                                            "FROM (SELECT d_name as dName " +
+                                            "FROM Dinosaur, physicalTraits " +
+                                            "WHERE d_type like ? AND d_dinokey = pt_dinokey " +
+                                            "GROUP BY d_name) as SQ1";
+    //Queries UserQuery9 End
+
+    //Queries UserQuery10
+    protected static String longestDino = "SELECT p_name ,p_enunciation, SQ1.maxL " + //13
+                                          "FROM pronunciation , Dinosaur, (SELECT d_dinokey as maxDino, max(pt_length) as maxL " +
+                                          "FROM Dinosaur, physicalTraits " +
+                                          "WHERE pt_dinokey = d_dinokey) as SQ1 " +
+                                          "WHERE p_name = d_name AND d_dinokey = SQ1.maxDino;";
+    //Queries UserQuery10 End
+
+    //Queries UserQuery11
+    protected static String dinoLength = "SELECT d_name, pt_length " + //14
+                                         "FROM Dinosaur, physicalTraits " +
+                                         "WHERE d_dinokey = pt_dinokey AND pt_length BETWEEN ? AND ?;";
+    
+    protected static String dinoHeight = "SELECT d_name, pt_height " +
+                                         "FROM Dinosaur, physicalTraits " +
+                                         "WHERE d_dinokey = pt_dinokey AND pt_height BETWEEN ? AND ?;";
+    
+    protected static String dinoWeight = "SELECT d_name, pt_weight " +
+                                         "FROM Dinosaur, physicalTraits " +
+                                         "WHERE d_dinokey = pt_dinokey AND pt_weight BETWEEN ? AND ?;";
+    //Queries UserQuery11 End
+
+    //Queries UserQuery12
+    protected static String speciesHab = "SELECT d_name, t_species " + //15
+                                         "FROM taxonomy, Dinosaur " +
+                                         "WHERE t_dinokey = d_dinokey and d_habkey IN (SELECT h_key FROM habitat WHERE h_name = ?);";
+    //Queries UserQuery13
+    protected static String dinoBodyType = "select d_name, pt_body, pt_length, tp_name " + //16
+                                           "from Dinosaur, timeperiod, physicalTraits " +
+                                           "where d_timeperiod = tp_name and d_dinokey = pt_dinokey " +
+                                           "and pt_body like ?;";
+    //Queries UserQuery13 End
+
+    //Queries UserQuery14
+    protected static String dinoMvmtMouthDiet = "select d_name, d_type, d_diet, pt_mouth, tp_name " + //17 
+                                                "from Dinosaur, habitat, timeperiod, physicalTraits " +
+                                                "where d_habkey = h_key and d_type = ? " +
+                                                "INTERSECT " +
+                                                "select d_name, d_type, d_diet, pt_mouth, tp_name " +
+                                                "from Dinosaur, fossil, timeperiod, physicalTraits " +
+                                                "where  d_timeperiod = tp_name and f_dinokey = d_dinokey " +
+                                                "and pt_mouth like ? and d_name = pt_name " +
+                                                "group by d_name " + 
+                                                "having d_diet = ?;";
+    //Queries UserQuery14 End
+
+    //Queries HistQuery1
+    protected static String reqInsert = "insert into requests values(?, ?, ?, ?, ?)";
+    //Queries HistQuery1 End
+
+    //Queries deleteInfo
+    protected static String delDino = "delete from Dinosaur where d_name = ?;";
+    protected static String findDinoLoc = "select l_dinokey, l_nation " + //18
+                                          "from location " +
+                                          "where l_dinokey like ? ";
+
+    protected static String updateDinoLoc = "update location set l_dinokey = ? where l_nation = ?;";
+    //Queries deleteInfo End
+
+    //Queries insertData
+    protected static String insertDino = "insert into Dinosaur values(?, ?, ?, ?, ?, ?, ?)";
+    protected static String insertFossil = "insert into fossil values(?, ?, ?, ?);";
+    protected static String insertPhysTrait = "insert into physicalTraits values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    protected static String insertPronounce = "insert into pronunciation values(?, ?, ?);";
+    protected static String insertTax = "insert into taxonomy values(?, ?, ?, ?, ?);";
+    protected static String selDinoSpec = "select d_name, d_dinokey from dinosaur where d_name = ?;"; //19
+    protected static String findDinoLoc2 = "select * from location where l_nation = ?"; //20 (maybe? might be a stretch)
+    //Queries insertData End
+
     public static String formatString(String in) //formats String so that the input is always right no matter how the user types it
     { 
         if(in != null && in.length() > 0)
@@ -16,7 +160,76 @@ public class DinoQueries
         return in;
 
     }
+    public static void deleteInfo(Connection conn, Scanner input) throws SQLException
+  {
+    ResultSet result = null;
+    PreparedStatement pre = null;
+    String quickFix = input.nextLine();
+    String dinoName, uSure, dinoKey, preStmt = "";
+
+    System.out.print("Please Enter Dinosaur to delete: ");
+    dinoName = input.nextLine();
+    dinoName = formatString(dinoName);
+    System.out.println();
+
     
+    preStmt = selDinoSpec;
+    pre = conn.prepareStatement(preStmt);
+    pre.setString(1, dinoName);
+    result = pre.executeQuery();
+    if(!result.next())
+    {
+        System.out.println("Dinosaur not in database.");
+        return;
+    }
+    else
+        dinoKey = result.getString("d_dinokey");
+
+    System.out.println("Are you sure you want to delete " + dinoName + " from database");
+    System.out.println("Enter 'Yes' or 'No' ");
+    uSure = input.nextLine();
+    uSure = uSure.toLowerCase();
+
+    if(uSure.equals("yes"))
+    {
+      preStmt = delDino;
+      pre = conn.prepareStatement(preStmt);
+      pre.setString(1, dinoName);
+      pre.executeUpdate();
+
+      preStmt = findDinoLoc;
+      
+      pre = conn.prepareStatement(preStmt);
+      pre.setString(1, "%" + dinoKey + "%");
+      result = pre.executeQuery();
+      while(result.next())
+      {
+        String loc = result.getString(1);
+        String locNation = result.getString(2);
+        dinoKey = dinoKey + ",";
+        int locIndex = loc.indexOf(dinoKey);
+        loc = loc.substring(0, locIndex) + loc.substring(locIndex + dinoKey.length());
+
+        preStmt = updateDinoLoc;
+        pre = conn.prepareStatement(preStmt);
+        pre.setString(1, loc);
+        pre.setString(2, locNation);
+        pre.executeUpdate();
+      }
+      
+      System.out.println(dinoName + " deleted.");
+      
+    }
+    else if(uSure.equals("no"))
+      System.out.println("Delete Operation Cancelled.");
+    else 
+      System.out.println("Invalid Input");
+    
+    pre.close();
+    result.close();
+    return;
+  
+  }
     public static void insertData(Connection conn, Scanner input) throws SQLException
     {  
         ResultSet result = null;
@@ -32,17 +245,17 @@ public class DinoQueries
         int maxKey, counter = 0;
 
 
-        tables[0] = "select * from Dinosaur";
-        tables[1] = "select * from fossil";
-        tables[2] = "select * from physicalTraits";
-        tables[3] = "select * from pronunciation";
-        tables[4] = "select * from taxonomy";
+        tables[0] = selDino;
+        tables[1] = selFossil2;
+        tables[2] = selPhysTrait;
+        tables[3] = selPronounce;
+        tables[4] = selTax;
 
-        entries[0] = "insert into Dinosaur values(?, ?, ?, ?, ?, ?, ?)";
-        entries[1] = "insert into fossil values(?, ?, ?, ?);";
-        entries[2] = "insert into physicalTraits values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        entries[3] = "insert into pronunciation values(?, ?, ?);";
-        entries[4] = "insert into taxonomy values(?, ?, ?, ?, ?);";
+        entries[0] = insertDino;
+        entries[1] = insertFossil;
+        entries[2] = insertPhysTrait;
+        entries[3] = insertPronounce;
+        entries[4] = insertTax;
 
         System.out.print("Enter Dinosaur You'd Like to insert: ");
         dinoName = input.nextLine();
@@ -50,15 +263,17 @@ public class DinoQueries
         System.out.println();
 
 
-        res = "select d_name, d_dinokey from dinosaur where d_name = \'"+dinoName+"\'";
-        result = stmt.executeQuery(res);
+        preStmt = selDinoSpec;
+        pre = conn.prepareStatement(preStmt);
+        pre.setString(1, dinoName);
+        result = pre.executeQuery();
         if(result.next())
         {
             System.out.println("Dinosaur already in database.");
             return;
         }
 
-        res = "select max(d_dinokey) from Dinosaur"; //4
+        res = maxDinoKey;
         result = stmt.executeQuery(res);
         if(result.next())
         {
@@ -66,8 +281,6 @@ public class DinoQueries
             maxKey++;
             dinoKey = Integer.toString(maxKey);
         }
-
-
 
         while(counter < tables.length)
         {
@@ -81,13 +294,24 @@ public class DinoQueries
             {
                 colName = resultMeta.getColumnName(i);
                 System.out.print("Enter " + colName + ": ");
-                info = input.nextLine();
                 if(colName.equals("d_name") || colName.equals("pt_name") || colName.equals("p_name") || colName.equals("t_genus"))
+                {
                     info = dinoName;
+                    System.out.print(info + "(already filled in)");
+                    System.out.println();
+                    pre.setString(i, info);
+                    continue;
+                }
                 else if(colName.equals("d_dinokey") ||colName.equals("f_dinokey") || colName.equals("pt_dinokey") || colName.equals("t_dinokey"))
+                {
                     info = dinoKey;
-                else
-                    info = info.toLowerCase();
+                    System.out.print(info + "(already filled in)");
+                    System.out.println();
+                    pre.setString(i, info);
+                    continue;
+                }
+                info = input.nextLine();
+                info = info.toLowerCase();
             
                 pre.setString(i, info);
             }
@@ -96,7 +320,34 @@ public class DinoQueries
         
         }
 
+        System.out.print("Enter Nation: ");
+        info = input.nextLine();
+        info = info.toLowerCase();
+        System.out.println();
+
+        preStmt = findDinoLoc2;
+        pre = conn.prepareStatement(preStmt);
+        pre.setString(1, info);
+        result = pre.executeQuery();
+        if(result.next())
+        {
+            String loc = result.getString("l_dinokey");
+            String locNation = result.getString("l_nation");
+            loc = loc + dinoKey + ",";
+            preStmt = updateDinoLoc;
+            pre = conn.prepareStatement(preStmt);
+            pre.setString(1, loc);
+            pre.setString(2, locNation);
+            pre.executeUpdate();
+        }
+        else
+            System.out.println("nation not found.");
+        
+        
         System.out.println("New Data Inserted Successfully");
+        pre.close();
+        stmt.close();
+        result.close();
 
     }
 }

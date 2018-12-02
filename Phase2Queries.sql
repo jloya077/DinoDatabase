@@ -42,7 +42,7 @@ And pt_body like "%large%"
 Group by d_name,tp_name 
 Having pt_length > 2;
 
-select d_name, l_nation
+select d_name, l_nation /*Query in JDBC */
 from Dinosaur, location
 where l_dinokey like '%21%'
 and d_dinokey = 21;

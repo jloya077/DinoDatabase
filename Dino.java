@@ -4,7 +4,10 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
-/* 17 Queries Done So Far */
+/* 20(potentially) Queries Done So Far 
+   Implement Another One once Daniel Updates Database
+   have request table include user name so User can search]
+   request table by User name */
 public class Dino extends DinoQueries
 {
    protected static Boolean histLogin = false;
@@ -16,19 +19,19 @@ public class Dino extends DinoQueries
     Connection connection = null;
     connection = connectDatabase(connection);
     Scanner input = new Scanner(System.in);
-    System.out.println("Welcome To DinoDatabase!");
+    System.out.println(ANSI_PURPLE + "Welcome To DinoDatabase!" + ANSI_RESET);
     try
     {
       int in = -1;
       while(true)
       {
         TimeUnit.SECONDS.sleep(2);
-        System.out.println("-------DinoDatabase Main Menu--------");
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_BLACK + "-------DinoDatabase Main Menu--------" + ANSI_RESET);
         System.out.println("0: Quit Program");
         System.out.println("1: Log in");
         System.out.println("2: Display Search Options");
         System.out.println("3: Log Out");
-        System.out.println("-------------------------------------");
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_BLACK + "-------------------------------------" + ANSI_RESET);
         System.out.print("Please enter desired option: ");
 
         try
@@ -118,9 +121,7 @@ public class Dino extends DinoQueries
       String password, type = "";
       String quickFix = input.nextLine();
 
-      String preStmt = "select * " +
-                       "from userbase " +
-                       "where u_username = ? and u_password = ?;";
+      String preStmt = logCheck;
 
       System.out.print("Please Enter User Name: ");
       login = input.nextLine();
@@ -187,11 +188,11 @@ public class Dino extends DinoQueries
      if(table.equals("dinosaur"))
      {
        if(dinosaur.equals("all"))
-        res = "select * from Dinosaur"; //1
+        res = selDino;
       else
-       res = "select * " +              //2
-             "from Dinosaur " +
-             "where d_name = \'"+dinosaur+"\'";
+       res =  "select * " +              
+              "from Dinosaur " +
+              "where d_name = \'"+dinosaur+"\'";
              
        result = stmt.executeQuery(res);
        System.out.println("--------------------------------------------------------------------------------------------");
@@ -211,7 +212,7 @@ public class Dino extends DinoQueries
      else if(table.equals("fossil"))
      {
        if(dinosaur.equals("all"))
-        res =  "select d_name, f_fossilData, f_fossilEvidence, f_period from Dinosaur, fossil where d_dinokey = f_dinokey"; //3
+        res =  selFossil;
        else
         res = "select d_name, f_fossilData, f_fossilEvidence, f_period from Dinosaur, fossil where d_dinokey = f_dinokey and d_name = \'"+dinosaur+"\'";
        
@@ -231,9 +232,9 @@ public class Dino extends DinoQueries
      else if(table.equals("physical traits"))
      {
        if(dinosaur.equals("all"))
-        res = "select * from physicalTraits";
+        res = selPhysTrait;
        else
-        res = "select * from physicalTraits where pt_name = \'"+dinosaur+"\'";
+        res = "select * from physicalTraits where pt_name = \'"+dinosaur+"\'"; 
 
        result = stmt.executeQuery(res);
        System.out.println("--------------------------------------------------------------------------------------------");
@@ -254,7 +255,7 @@ public class Dino extends DinoQueries
      else if(table.equals("pronunciation"))
      {
        if(dinosaur.equals("all"))
-        res = "select * from pronunciation";
+        res = selPronounce;
        else
         res = "select * from pronunciation where p_name = \'"+dinosaur+"\'";
        result = stmt.executeQuery(res);
@@ -270,7 +271,7 @@ public class Dino extends DinoQueries
      else if(table.equals("taxonomy"))
      {
        if(dinosaur.equals("all"))
-        res = "select * from taxonomy";
+        res = selTax;
        else
         res = "select * from taxonomy where t_genus = \'"+dinosaur+"\'";
        
@@ -288,7 +289,7 @@ public class Dino extends DinoQueries
      else if(table.equals("time period"))
      {
        if(dinosaur.equals("all"))
-        res = "select tp_comment, tp_name from timeperiod";
+        res = selTime;
        else
         res = "select tp_comment, tp_name from Dinosaur, timeperiod where d_timeperiod = tp_name and d_name = \'"+dinosaur+"\'";
        
@@ -304,7 +305,7 @@ public class Dino extends DinoQueries
      else if(table.equals("requests") && (histLogin || adminLogin))
      {
        if(dinosaur.equals("all"))
-        res = "select * from requests";
+        res = selRequest;
        else
         res = "select * from requests where r_name = \'"+dinosaur+"\' and r_updatestatus = 'f'"; //15
 
@@ -337,7 +338,7 @@ public class Dino extends DinoQueries
     while(true)
     {
         TimeUnit.SECONDS.sleep(2);
-        System.out.println("-------User Menu--------");
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_BLACK + "-------User Menu--------" + ANSI_RESET);
         System.out.println("0: Exit User Menu");
         System.out.println("1: I'm Feeling Lucky");
         System.out.println("2: Display Complete Dinosaur Data");
@@ -364,7 +365,7 @@ public class Dino extends DinoQueries
           System.out.println("18: Delete Dinosaur From Database.");
           System.out.println("19: Insert Dinosaur Into Database.");
         }
-        System.out.println("------------------------");
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_BLACK + "------------------------" + ANSI_RESET);
         System.out.print("Please enter desired option: ");
 
         try
@@ -420,7 +421,7 @@ public class Dino extends DinoQueries
     String dinoName = "";
     String in = "";
 
-    res = "select max(d_dinokey) from Dinosaur"; //4
+    res = maxDinoKey; //4
     result = stmt.executeQuery(res);
     if(result.next())
     {
@@ -474,7 +475,7 @@ public class Dino extends DinoQueries
 
     String quickFix = input.nextLine(); //for some reason input skips over, doing this fixes it.
 
-    String preStmt = "select d_name, l_nation, h_name, tp_yearsAgo from Dinosaur, location, habitat, timeperiod where l_dinokey like ? and d_dinokey = ? and h_key = d_habkey and d_timeperiod = tp_name and d_name = ?"; //5
+    String preStmt = findDino;
 
     pre = conn.prepareStatement(preStmt);
 
@@ -553,7 +554,7 @@ public class Dino extends DinoQueries
    PreparedStatement pre = null;
    Statement stmt = conn.createStatement();
 
-   String preStmt = "select d_name from Dinosaur, taxonomy where  t_species = ? and d_name = t_genus;"; //6
+   String preStmt = findSpecies;
    String res = "";
    String quickFix = input.nextLine();
 
@@ -595,10 +596,7 @@ public static void userQuery5(Connection conn) throws SQLException
   ResultSet result = null;
   Statement stmt = conn.createStatement();
 
-  String res = "SELECT h_name ,d_name , MAX(pt_length) FROM Dinosaur, physicalTraits, habitat " + //7
-  "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey " + 
-  "GROUP BY h_name " +
-  "ORDER BY pt_length ASC;";
+  String res = longDinos;
 
   result = stmt.executeQuery(res);
 
@@ -624,12 +622,7 @@ public static void userQuery6(Connection conn, Scanner input) throws SQLExceptio
   int topNum = 0;
   int rank = 1;
 
-  String preStmt = "SELECT h_name ,d_name , MAX(pt_weight) " + //8
-                   "FROM Dinosaur, physicalTraits, habitat " +
-                   "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey and pt_weight != 'unknown' " +
-                   "GROUP BY d_name " +
-                   "ORDER BY pt_weight desc " +
-                   "LIMIT ?;";
+  String preStmt = topHeavy;
   pre = conn.prepareStatement(preStmt);
 
   System.out.println("Please Enter Number:");
@@ -660,11 +653,7 @@ public static void userQuery7(Connection conn, Scanner input) throws SQLExceptio
   PreparedStatement pre = null;
   float topNum = 0;
 
-  String preStmt = "SELECT d_name , pt_height " + //9
-                   "FROM Dinosaur, physicalTraits " +
-                   "WHERE d_dinokey = pt_dinokey and pt_height != 'unknown' " +
-                   "GROUP BY d_name " +
-                   "HAVING pt_height >= ?;";
+  String preStmt = minHeight;
 
   pre = conn.prepareStatement(preStmt);
 
@@ -698,11 +687,7 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
   String res = "";
   String habName = "";
   String dietName = "";
-  String preStmt = "SELECT COUNT(d_name) " + //10
-                   "FROM Dinosaur " +
-                   "WHERE d_name IN (SELECT d_name FROM Dinosaur, habitat " +
-                                    "WHERE d_habkey = h_key " +
-                                    "AND h_name = ? AND d_diet = ?);";
+  String preStmt = numDinosHabDiet;
 
   pre = conn.prepareStatement(preStmt);
   System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
@@ -766,11 +751,7 @@ public static void userQuery9(Connection conn, Scanner input) throws SQLExceptio
 
   String dinoType = "";
   String quickFix = input.nextLine();
-  String preStmt = "SELECT COUNT(*) " + //11
-                   "FROM (SELECT d_name as dName " +
-                   "FROM Dinosaur, physicalTraits " +
-                   "WHERE d_type like ? AND d_dinokey = pt_dinokey " +
-                   "GROUP BY d_name) as SQ1";
+  String preStmt = numDinosType;
   pre = conn.prepareStatement(preStmt);
 
   System.out.println("Please enter Dinosaur Type:");
@@ -803,11 +784,7 @@ public static void userQuery10(Connection conn) throws SQLException
   ResultSet result = null;
   Statement stmt = conn.createStatement();
 
-  String res = "SELECT p_name ,p_enunciation, SQ1.maxL " + //12
-               "FROM pronunciation , Dinosaur, (SELECT d_dinokey as maxDino, max(pt_length) as maxL " +
-                                               "FROM Dinosaur, physicalTraits " +
-                                               "WHERE pt_dinokey = d_dinokey) as SQ1 " +
-                                              "WHERE p_name = d_name AND d_dinokey = SQ1.maxDino;";
+  String res = longestDino;
 
   result = stmt.executeQuery(res);
   
@@ -828,41 +805,21 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
   ResultSet result = null;
   PreparedStatement pre = null;
 
-  float min = 0;
-  float max = 0;
-
+  float min, max = 0;
   String quickFix = input.nextLine();
-  String trait = "";
-  String attribute = "";
-  String preStmt = "";
-  
+  String trait, preStmt = "";
+
   System.out.println("Please select  measurement type: ");
   System.out.println("Options: Length, Height, Weight");
   trait = input.nextLine();
   trait = formatString(trait);
 
   if(trait.equals("Length"))
-  {
-    attribute = "pt_length"; //13
-    preStmt = "SELECT d_name, pt_length " +
-                   "FROM Dinosaur, physicalTraits " +
-                   "WHERE d_dinokey = pt_dinokey AND pt_length BETWEEN ? AND ?;";
-  }
+    preStmt = dinoLength;
   else if(trait.equals("Height"))
-  {
-    attribute = "pt_height";
-    preStmt = "SELECT d_name, pt_height " +
-    "FROM Dinosaur, physicalTraits " +
-    "WHERE d_dinokey = pt_dinokey AND pt_height BETWEEN ? AND ?;";
-  }
+    preStmt = dinoHeight;
   else if(trait.equals("Weight"))
-  {
-    attribute = "pt_weight";
-    preStmt = "SELECT d_name, pt_weight " +
-    "FROM Dinosaur, physicalTraits " +
-    "WHERE d_dinokey = pt_dinokey AND pt_weight BETWEEN ? AND ?;";
-   
-  }
+    preStmt = dinoWeight;
   else
   {
     System.out.println("Option not found.");
@@ -907,9 +864,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     String res = "";
     String habName = "";
     
-    String preStmt = "SELECT d_name, t_species " +
-                     "FROM taxonomy, Dinosaur " +
-                     "WHERE t_dinokey = d_dinokey and d_habkey IN (SELECT h_key FROM habitat WHERE h_name = ?);";
+    String preStmt = speciesHab;
     pre = conn.prepareStatement(preStmt);
     
     System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
@@ -955,10 +910,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     ResultSet result = null;
     PreparedStatement pre = null;
 
-    String preStmt = "select d_name, pt_body, pt_length, tp_name " +
-                      "from Dinosaur, timeperiod, physicalTraits " +
-                      "where d_timeperiod = tp_name and d_dinokey = pt_dinokey " +
-                      "and pt_body like ?;";
+    String preStmt = dinoBodyType;
 
     String quickFix = input.nextLine();
     String bodyType = "";
@@ -992,16 +944,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     String quickFix = input.nextLine();
     String mvmtType, mouthType, dietType = "";
 
-    String preStmt =  "select d_name, d_type, d_diet, pt_mouth, tp_name " + //17 
-                      "from Dinosaur, habitat, timeperiod, physicalTraits " +
-                      "where d_habkey = h_key and d_type = ? " +
-                      "INTERSECT " +
-                      "select d_name, d_type, d_diet, pt_mouth, tp_name " +
-                      "from Dinosaur, fossil, timeperiod, physicalTraits " +
-                      "where  d_timeperiod = tp_name and f_dinokey = d_dinokey " +
-                      "and pt_mouth like ? and d_name = pt_name " +
-                      "group by d_name " + 
-                      "having d_diet = ?;";
+    String preStmt = dinoMvmtMouthDiet;
     pre = conn.prepareStatement(preStmt);
 
     System.out.println("Options: Land, Air, Water");
@@ -1049,8 +992,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     Statement stmt = conn.createStatement();
 
     String quickFix = input.nextLine();
-    String preStmt = "insert into requests " +
-                     "values(?, ?, ?, ?, ?)";
+    String preStmt = reqInsert;
     
     pre = conn.prepareStatement(preStmt);
     String res, dinoName, tableName, comment1, comment2 = "";
@@ -1113,41 +1055,4 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     getTableInfo(conn, input, "requests", dinoName);
   }
 
-  public static void deleteInfo(Connection conn, Scanner input) throws SQLException
-  {
-    
-    PreparedStatement pre = null;
-    String quickFix = input.nextLine();
-    String dinoName = "";
-    String uSure = "";
-
-    String preStmt = "delete from Dinosaur where d_name = ?;";
-    pre = conn.prepareStatement(preStmt);
-
-    System.out.print("Please Enter Dinosaur to delete: ");
-    dinoName = input.nextLine();
-    System.out.println();
-
-    System.out.println("Are you sure you want to delete " + dinoName + " from database");
-    System.out.println("Enter 'Yes' or 'No' ");
-    uSure = input.nextLine();
-    uSure = uSure.toLowerCase();
-
-    if(uSure.equals("yes"))
-    {
-      pre.setString(1, dinoName);
-      pre.executeUpdate();
-
-      System.out.println(dinoName + " deleted.");
-      
-    }
-    else if(uSure.equals("no"))
-      System.out.println("Delete Operation Cancelled.");
-    else 
-      System.out.println("Invalid Input");
-    
-    pre.close();
-    return;
-  
-  }
 }
