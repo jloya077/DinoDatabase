@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
 /* 17 Queries Done So Far */
-public class Dino 
+public class Dino extends DinoQueries
 {
    protected static Boolean histLogin = false;
    protected static Boolean adminLogin = false;
@@ -109,16 +109,6 @@ public class Dino
     {
       conn.close();
     }
-  }
-  public static String formatString(String in) //formats String so that the input is always right no matter how the user types it
-  {
-    if(in != null && in.length() > 0)
-    {
-      in = in.toLowerCase();
-      in = in.substring(0,1).toUpperCase() + in.substring(1);
-    }
-    return in;
-
   }
   public static void userLogin(Connection conn, Scanner input) throws SQLException
   {
@@ -372,6 +362,7 @@ public class Dino
         if(adminLogin)
         {
           System.out.println("18: Delete Dinosaur From Database.");
+          System.out.println("19: Insert Dinosaur Into Database.");
         }
         System.out.println("------------------------");
         System.out.print("Please enter desired option: ");
@@ -405,13 +396,14 @@ public class Dino
         if(histLogin || adminLogin)
         {
           if(in == 15){histQuery1(conn, input);}
-          if(in == 16){getTableInfo(conn, input, "requests", "all");}
-          if(in == 17){histQuery2(conn, input);}
+          else if(in == 16){getTableInfo(conn, input, "requests", "all");}
+          else if(in == 17){histQuery2(conn, input);}
 
         }
         if(adminLogin)
         {
           if(in == 18){deleteInfo(conn,input);}
+          else if(in == 19){insertData(conn, input);}
           
         }
         else{System.out.println("Invalid Option, Please Try Again.");}
