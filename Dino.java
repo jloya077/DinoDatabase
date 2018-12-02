@@ -7,7 +7,10 @@ import java.util.concurrent.ThreadLocalRandom;
 /* 20(potentially) Queries Done So Far 
    Implement Another One once Daniel Updates Database
    have request table include user name so User can search]
-   request table by User name */
+   request table by User name 
+   System.out.println("--------------------------------------------------------------------------------------------"); 
+   System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "============================================================================================" + ANSI_RESET);
+   original line separator just in case  */
 public class Dino extends DinoQueries
 {
    protected static Boolean histLogin = false;
@@ -19,19 +22,22 @@ public class Dino extends DinoQueries
     Connection connection = null;
     connection = connectDatabase(connection);
     Scanner input = new Scanner(System.in);
-    System.out.println(ANSI_PURPLE + "Welcome To DinoDatabase!" + ANSI_RESET);
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + dinoBanner2 + ANSI_RESET);
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + dinoBanner + ANSI_RESET);
+    TimeUnit.SECONDS.sleep(1);
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + jurassicDino2 + ANSI_RESET);
     try
     {
       int in = -1;
       while(true)
       {
         TimeUnit.SECONDS.sleep(2);
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_BLACK + "-------DinoDatabase Main Menu--------" + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------DinoDatabase Main Menu--------" + ANSI_RESET);
         System.out.println("0: Quit Program");
         System.out.println("1: Log in");
         System.out.println("2: Display Search Options");
         System.out.println("3: Log Out");
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_BLACK + "-------------------------------------" + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------------------------------------" + ANSI_RESET);
         System.out.print("Please enter desired option: ");
 
         try
@@ -195,7 +201,7 @@ public class Dino extends DinoQueries
               "where d_name = \'"+dinosaur+"\'";
              
        result = stmt.executeQuery(res);
-       System.out.println("--------------------------------------------------------------------------------------------");
+       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        while(result.next())
        {
          System.out.println("Dino key: " + result.getInt(1));
@@ -205,7 +211,7 @@ public class Dino extends DinoQueries
          System.out.println("Description: " + result.getString(5)); 
          System.out.println("Type: " + result.getString(6)); 
          System.out.println("Habitat Key: " + result.getInt(7));
-         System.out.println("--------------------------------------------------------------------------------------------");
+         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        }
  
      }
@@ -219,14 +225,14 @@ public class Dino extends DinoQueries
         result = stmt.executeQuery(res);
  
   
-       System.out.println("--------------------------------------------------------------------------------------------");
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        while(result.next())
        {
          System.out.println("Name: " + result.getString(1)); 
          System.out.println("Fossil Data: " + result.getString(2));
          System.out.println("Fossil Evidence: " + result.getString(3));
          System.out.println("Time Period: " + result.getString(4));
-         System.out.println("--------------------------------------------------------------------------------------------");   
+         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        }
      }
      else if(table.equals("physical traits"))
@@ -237,7 +243,7 @@ public class Dino extends DinoQueries
         res = "select * from physicalTraits where pt_name = \'"+dinosaur+"\'"; 
 
        result = stmt.executeQuery(res);
-       System.out.println("--------------------------------------------------------------------------------------------");
+       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        while(result.next())
        {
          System.out.println("Name: " + result.getString(2));
@@ -249,7 +255,7 @@ public class Dino extends DinoQueries
          System.out.println("Mouth Type: " + result.getString(8));
          System.out.println("Defining Trait: " + result.getString(9));
          System.out.println("Class: " + result.getString(10));
-         System.out.println("--------------------------------------------------------------------------------------------");   
+         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        }
      }
      else if(table.equals("pronunciation"))
@@ -259,13 +265,13 @@ public class Dino extends DinoQueries
        else
         res = "select * from pronunciation where p_name = \'"+dinosaur+"\'";
        result = stmt.executeQuery(res);
-       System.out.println("--------------------------------------------------------------------------------------------");
+       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        while(result.next())
        {
          System.out.println("Name: " + result.getString(1));
          System.out.println("Enunciation: " + result.getString(2));
          System.out.println("Meaning: " + result.getString(3));
-         System.out.println("--------------------------------------------------------------------------------------------");   
+         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        }
      }
      else if(table.equals("taxonomy"))
@@ -276,14 +282,14 @@ public class Dino extends DinoQueries
         res = "select * from taxonomy where t_genus = \'"+dinosaur+"\'";
        
        result = stmt.executeQuery(res);
-       System.out.println("--------------------------------------------------------------------------------------------");
+       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        while(result.next())
        {
          System.out.println("Genus: " + result.getString(1));
          System.out.println("Species: " + result.getString(2));
          System.out.println("Family: " + result.getString(3));
          System.out.println("Order: " + result.getString(4));
-         System.out.println("--------------------------------------------------------------------------------------------");   
+         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        }
      }
      else if(table.equals("time period"))
@@ -294,12 +300,12 @@ public class Dino extends DinoQueries
         res = "select tp_comment, tp_name from Dinosaur, timeperiod where d_timeperiod = tp_name and d_name = \'"+dinosaur+"\'";
        
        result = stmt.executeQuery(res);
-       System.out.println("--------------------------------------------------------------------------------------------");
+       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        while(result.next())
        {
          System.out.println("Time Period: " + result.getString(2));
          System.out.println("Info: " + result.getString(1));
-         System.out.println("--------------------------------------------------------------------------------------------");   
+         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
        }
      }
      else if(table.equals("requests") && (histLogin || adminLogin))
@@ -310,7 +316,7 @@ public class Dino extends DinoQueries
         res = "select * from requests where r_name = \'"+dinosaur+"\' and r_updatestatus = 'f'"; //15
 
         result = stmt.executeQuery(res);
-        System.out.println("--------------------------------------------------------------------------------------------");
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
         while(result.next())
         {
           System.out.println("Name: " + result.getString(1));
@@ -318,14 +324,13 @@ public class Dino extends DinoQueries
           System.out.println("Comment 1: " + result.getString(3));
           System.out.println("Comment 2: " + result.getString(4));
           System.out.println("Update Status: " + result.getString(5));
-          System.out.println("--------------------------------------------------------------------------------------------");   
+          System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
         }
-
      }
      else 
      {
+      
        System.out.println("Invalid Table, please choose from available options.");
-       System.out.println("--------------------------------------------------------------------------------------------");
        return;
      }
  
@@ -338,7 +343,7 @@ public class Dino extends DinoQueries
     while(true)
     {
         TimeUnit.SECONDS.sleep(2);
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_BLACK + "-------User Menu--------" + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------User Menu--------" + ANSI_RESET);
         System.out.println("0: Exit User Menu");
         System.out.println("1: I'm Feeling Lucky");
         System.out.println("2: Display Complete Dinosaur Data");
@@ -365,7 +370,7 @@ public class Dino extends DinoQueries
           System.out.println("18: Delete Dinosaur From Database.");
           System.out.println("19: Insert Dinosaur Into Database.");
         }
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_BLACK + "------------------------" + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "------------------------" + ANSI_RESET);
         System.out.print("Please enter desired option: ");
 
         try
@@ -399,15 +404,19 @@ public class Dino extends DinoQueries
           if(in == 15){histQuery1(conn, input);}
           else if(in == 16){getTableInfo(conn, input, "requests", "all");}
           else if(in == 17){histQuery2(conn, input);}
-
         }
         if(adminLogin)
         {
           if(in == 18){deleteInfo(conn,input);}
           else if(in == 19){insertData(conn, input);}
-          
         }
-        else{System.out.println("Invalid Option, Please Try Again.");}
+        if(histLogin)
+          if(in > 17){System.out.println("Invalid Option, Please Try Again.");}
+        if(adminLogin)
+          if(in > 19){System.out.println("Invalid Option, Please Try Again.");}
+        if(!histLogin && !adminLogin)
+          if(in > 14){System.out.println("Invalid Option, Please Try Again.");}
+
 
     }
   }
@@ -435,9 +444,9 @@ public class Dino extends DinoQueries
     if(result.next())
     {
       dinoName = result.getString(1);
-      System.out.println("--------------------------------------------------------------------------------------------");
+      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
       System.out.println("Dinosaur: " + result.getString(1));
-      System.out.println("--------------------------------------------------------------------------------------------");
+      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     }
 
     stmt.close();
@@ -506,7 +515,7 @@ public class Dino extends DinoQueries
     //print out results
     if(result.next())
     {
-      System.out.println("----------------------------------------------------------------------");
+      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
       System.out.println("Name: " + result.getString(1));
       System.out.println("Habitat: " + result.getString(3));
       System.out.println("Years Ago: " + result.getInt(4));
@@ -524,7 +533,7 @@ public class Dino extends DinoQueries
       System.out.print(result.getString(2) + ", ");
     }
     System.out.println();
-    System.out.println("----------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
 
     pre.close(); //close statements and resultset
     stmt.close();
@@ -580,9 +589,12 @@ public class Dino extends DinoQueries
 
    pre.setString(1, dinoSpecies);
    result = pre.executeQuery();
+   System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
    while(result.next())
    {
+    
      System.out.println("Name: " + result.getString(1));
+     System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
    }
 
    pre.close();
@@ -600,14 +612,13 @@ public static void userQuery5(Connection conn) throws SQLException
 
   result = stmt.executeQuery(res);
 
+  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   while(result.next())
   {
-    System.out.println("--------------------------------------------------------------------------------------------");
     System.out.println("Habitat: " + result.getString(1));
     System.out.println("Dinosaur: " + result.getString(2));
     System.out.println("Length: " + result.getFloat(3));
-    System.out.println("--------------------------------------------------------------------------------------------");
-
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   }
 
   stmt.close();
@@ -631,14 +642,14 @@ public static void userQuery6(Connection conn, Scanner input) throws SQLExceptio
   pre.setInt(1, topNum);
   result = pre.executeQuery();
 
-  System.out.println("--------------------------------------------------------------------------------------------");
+  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   while(result.next())
   {
     System.out.println("Rank: " + rank);
     System.out.println("Habitat: " + result.getString(1));
     System.out.println("Dinosaur: " + result.getString(2));
     System.out.println("Weight: " + result.getFloat(3));
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     rank++;
 
   }
@@ -663,12 +674,12 @@ public static void userQuery7(Connection conn, Scanner input) throws SQLExceptio
   pre.setFloat(1, topNum);
   result = pre.executeQuery();
 
-  System.out.println("--------------------------------------------------------------------------------------------");
+  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   while(result.next())
   {
     System.out.println("Dinosaur: " + result.getString(1));
     System.out.println("Height: " + result.getFloat(2));
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
 
   }
 
@@ -729,9 +740,9 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
   result = pre.executeQuery();
   if(result.next())
   {
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     System.out.println("Number of Dinosaurs with " + dietName + " diet and "+ habName + " habitat: " + result.getInt(1));
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   }
   else
   {
@@ -765,9 +776,9 @@ public static void userQuery9(Connection conn, Scanner input) throws SQLExceptio
   result = pre.executeQuery();
   if(result.next())
   {
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     System.out.println("Number of dinosaurs of " + dinoType + " type: " + result.getInt(1));
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   }
   else
   {
@@ -788,13 +799,13 @@ public static void userQuery10(Connection conn) throws SQLException
 
   result = stmt.executeQuery(res);
   
-  System.out.println("--------------------------------------------------------------------------------------------");
+  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   while(result.next())
   {
     System.out.println("Name: " + result.getString(1));
     System.out.println("Enunciation: " + result.getString(2));
     System.out.println("Length: " + result.getInt(3));
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   }
   stmt.close();
   result.close();
@@ -840,12 +851,12 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
   result = pre.executeQuery();
 
-  System.out.println("--------------------------------------------------------------------------------------------");
+  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   while(result.next())
   {
     System.out.println("Name: " + result.getString(1));
     System.out.println(trait + ": " + result.getFloat(2));
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
 
 
   }
@@ -889,13 +900,13 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
     result = pre.executeQuery();
 
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     while(result.next())
     {
         System.out.println("Name: " + result.getString(1));
         System.out.println("Species: " + result.getString(2));
         System.out.println("Habitat: " + habName);
-        System.out.println("--------------------------------------------------------------------------------------------");
+        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     }
 
     stmt.close();
@@ -924,14 +935,14 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
     result = pre.executeQuery();
 
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     while(result.next())
     {
       System.out.println("Name: " + result.getString(1));
       System.out.println("Body: " + result.getString(2));
       System.out.println("Length: " + result.getFloat(3));
       System.out.println("Time Period: " + result.getString(4));
-      System.out.println("--------------------------------------------------------------------------------------------");
+      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     }
     
   }
@@ -969,7 +980,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
     result = pre.executeQuery();
 
-    System.out.println("--------------------------------------------------------------------------------------------");
+    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     while(result.next())
     {
       System.out.println("Name: " + result.getString(1));
@@ -977,7 +988,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
       System.out.println("Diet: " + result.getString(3));
       System.out.println("Mouth: " + result.getString(4));
       System.out.println("Time Period: " + result.getString(5));
-      System.out.println("--------------------------------------------------------------------------------------------");
+      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
     }
 
     result.close();
