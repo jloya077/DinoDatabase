@@ -484,17 +484,13 @@ public class Dino extends DinoQueries
 
     String quickFix = input.nextLine(); //for some reason input skips over, doing this fixes it.
 
-    String preStmt = findDino;
-
-    pre = conn.prepareStatement(preStmt);
-
     System.out.println("Please Enter Dinosaur Name:");
     dinoName = input.nextLine();
     dinoName = formatString(dinoName); //format into correct form
 
-    res = "select d_name, d_dinokey from dinosaur where d_name = \'"+dinoName+"\'";
-    result = stmt.executeQuery(res);
-
+    pre = conn.prepareStatement(dinoCheck);
+    pre.setString(1, dinoName);
+    result = pre.executeQuery();
     if(result.next())
     {
       dinoName = result.getString("d_name"); //set variables
@@ -507,6 +503,8 @@ public class Dino extends DinoQueries
       return;
     }
     
+   
+    pre = conn.prepareStatement(findDino);
     pre.setString(1, "%" + dinoKey + "%"); //do this to fill in LIKE keyword
     pre.setInt(2, dinoKey);
     pre.setString(3, dinoName);

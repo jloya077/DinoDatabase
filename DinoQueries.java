@@ -153,22 +153,25 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery1 End
 
     //Queries UserQuery3
-    protected static String findDino = "select d_name, l_nation, h_name, tp_yearsAgo from Dinosaur, location, habitat, timeperiod where l_dinokey like ? and d_dinokey = ? and h_key = d_habkey and d_timeperiod = tp_name and d_name = ?"; //6
+    protected static String dinoCheck = "select d_name, d_dinokey from dinosaur where d_name = ?"; //6
+    protected static String findDino = "select d_name, l_nation, h_name, tp_yearsAgo " + 
+                                       "from Dinosaur, location, habitat, timeperiod " + 
+                                       "where l_dinokey like ? and d_dinokey = ? and h_key = d_habkey and d_timeperiod = tp_name and d_name = ?;"; //7
     //Queries UserQuery3 End
 
     //Queries UserQuery4
-    protected static String findSpecies = "select d_name from Dinosaur, taxonomy where  t_species = ? and d_name = t_genus;"; //7
+    protected static String findSpecies = "select d_name from Dinosaur, taxonomy where  t_species = ? and d_name = t_genus;"; //8
     //Queries UserQuery4 End
 
     //Queries UserQuery5
-    protected static String longDinos = "SELECT h_name ,d_name , MAX(pt_length) FROM Dinosaur, physicalTraits, habitat " + //8
+    protected static String longDinos = "SELECT h_name ,d_name , MAX(pt_length) FROM Dinosaur, physicalTraits, habitat " + //9
                                         "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey " + 
                                         "GROUP BY h_name " +
                                         "ORDER BY pt_length ASC;";
     //Queries UserQuery5 End
 
     //Queries UserQuery6
-    protected static String topHeavy = "SELECT h_name ,d_name , MAX(pt_weight) " + //9
+    protected static String topHeavy = "SELECT h_name ,d_name , MAX(pt_weight) " + //10
                                         "FROM Dinosaur, physicalTraits, habitat " +
                                         "WHERE d_dinokey = pt_dinokey AND h_key = d_habkey and pt_weight != 'unknown' " +
                                         "GROUP BY d_name " +
@@ -177,7 +180,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery6 End
 
     //Queries UserQuery7
-    protected static String minHeight = "SELECT d_name , pt_height " + //10
+    protected static String minHeight = "SELECT d_name , pt_height " + //11
                                         "FROM Dinosaur, physicalTraits " +
                                         "WHERE d_dinokey = pt_dinokey and pt_height != 'unknown' " +
                                         "GROUP BY d_name " +
@@ -185,7 +188,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery7 End
 
     //Queries UserQuery8
-    protected static String numDinosHabDiet = "SELECT COUNT(d_name) " + //11
+    protected static String numDinosHabDiet = "SELECT COUNT(d_name) " + //12
                                               "FROM Dinosaur " +
                                               "WHERE d_name IN (SELECT d_name FROM Dinosaur, habitat " +
                                               "WHERE d_habkey = h_key " +
@@ -193,7 +196,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery8 End
 
     //Queries UserQuery9
-    protected static String numDinosType = "SELECT COUNT(*) " + //12
+    protected static String numDinosType = "SELECT COUNT(*) " + //13
                                             "FROM (SELECT d_name as dName " +
                                             "FROM Dinosaur, physicalTraits " +
                                             "WHERE d_type like ? AND d_dinokey = pt_dinokey " +
@@ -201,7 +204,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery9 End
 
     //Queries UserQuery10
-    protected static String longestDino = "SELECT p_name ,p_enunciation, SQ1.maxL " + //13
+    protected static String longestDino = "SELECT p_name ,p_enunciation, SQ1.maxL " + //14
                                           "FROM pronunciation , Dinosaur, (SELECT d_dinokey as maxDino, max(pt_length) as maxL " +
                                           "FROM Dinosaur, physicalTraits " +
                                           "WHERE pt_dinokey = d_dinokey) as SQ1 " +
@@ -209,7 +212,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery10 End
 
     //Queries UserQuery11
-    protected static String dinoLength = "SELECT d_name, pt_length " + //14
+    protected static String dinoLength = "SELECT d_name, pt_length " + //15
                                          "FROM Dinosaur, physicalTraits " +
                                          "WHERE d_dinokey = pt_dinokey AND pt_length BETWEEN ? AND ?;";
     
@@ -223,18 +226,18 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery11 End
 
     //Queries UserQuery12
-    protected static String speciesHab = "SELECT d_name, t_species " + //15
+    protected static String speciesHab = "SELECT d_name, t_species " + //16
                                          "FROM taxonomy, Dinosaur " +
                                          "WHERE t_dinokey = d_dinokey and d_habkey IN (SELECT h_key FROM habitat WHERE h_name = ?);";
     //Queries UserQuery13
-    protected static String dinoBodyType = "select d_name, pt_body, pt_length, tp_name " + //16
+    protected static String dinoBodyType = "select d_name, pt_body, pt_length, tp_name " + //17
                                            "from Dinosaur, timeperiod, physicalTraits " +
                                            "where d_timeperiod = tp_name and d_dinokey = pt_dinokey " +
                                            "and pt_body like ?;";
     //Queries UserQuery13 End
 
     //Queries UserQuery14
-    protected static String dinoMvmtMouthDiet = "select d_name, d_type, d_diet, pt_mouth, tp_name " + //17 
+    protected static String dinoMvmtMouthDiet = "select d_name, d_type, d_diet, pt_mouth, tp_name " + //18
                                                 "from Dinosaur, habitat, timeperiod, physicalTraits " +
                                                 "where d_habkey = h_key and d_type = ? " +
                                                 "INTERSECT " +
@@ -252,7 +255,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
 
     //Queries deleteInfo
     protected static String delDino = "delete from Dinosaur where d_name = ?;";
-    protected static String findDinoLoc = "select l_dinokey, l_nation " + //18
+    protected static String findDinoLoc = "select l_dinokey, l_nation " + //19
                                           "from location " +
                                           "where l_dinokey like ? ";
 
@@ -265,7 +268,6 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     protected static String insertPhysTrait = "insert into physicalTraits values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     protected static String insertPronounce = "insert into pronunciation values(?, ?, ?);";
     protected static String insertTax = "insert into taxonomy values(?, ?, ?, ?, ?);";
-    protected static String selDinoSpec = "select d_name, d_dinokey from dinosaur where d_name = ?;"; //19
     protected static String findDinoLoc2 = "select * from location where l_nation = ?"; //20 (maybe? might be a stretch)
     //Queries insertData End
 
@@ -292,7 +294,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     System.out.println();
 
     
-    preStmt = selDinoSpec;
+    preStmt = dinoCheck;
     pre = conn.prepareStatement(preStmt);
     pre.setString(1, dinoName);
     result = pre.executeQuery();
@@ -382,7 +384,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         System.out.println();
 
 
-        preStmt = selDinoSpec;
+        preStmt = dinoCheck;
         pre = conn.prepareStatement(preStmt);
         pre.setString(1, dinoName);
         result = pre.executeQuery();
