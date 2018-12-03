@@ -35,8 +35,9 @@ public class Dino extends DinoQueries
         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------DinoDatabase Main Menu--------" + ANSI_RESET);
         System.out.println("0: Quit Program");
         System.out.println("1: Log in");
-        System.out.println("2: Display Search Options");
-        System.out.println("3: Log Out");
+        System.out.println("2: Create Account");
+        System.out.println("3: Display Search Options");
+        System.out.println("4: Log Out");
         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------------------------------------" + ANSI_RESET);
         System.out.print("Please enter desired option: ");
 
@@ -59,14 +60,18 @@ public class Dino extends DinoQueries
         }
         else if(in == 1)
         {
-            userLogin(connection, input);
+            userLogin(connection, input, 1);
         }
         else if(in == 2)
+        {
+            userLogin(connection, input, 2);
+        }
+        else if(in == 3)
         {
             System.out.println("Displaying Search Options");
             userMenu(connection, input);
         }
-        else if(in == 3)
+        else if(in == 4)
         {
             histLogin = false;
             adminLogin = false;
@@ -74,7 +79,7 @@ public class Dino extends DinoQueries
             System.out.println("Goodbye " + login);
             login = "";
         }
-        else if(in > 3)
+        else if(in > 4)
         {
           System.out.println("Invalid value entered, please try again");
         }
@@ -119,7 +124,7 @@ public class Dino extends DinoQueries
       conn.close();
     }
   }
-  public static void userLogin(Connection conn, Scanner input) throws SQLException
+  public static void userLogin(Connection conn, Scanner input, int log) throws SQLException
   {
       ResultSet result = null;
       PreparedStatement pre = null;
@@ -127,7 +132,6 @@ public class Dino extends DinoQueries
       String password, type = "";
       String quickFix = input.nextLine();
 
-      String preStmt = logCheck;
 
       System.out.print("Please Enter User Name: ");
       login = input.nextLine();
@@ -136,28 +140,48 @@ public class Dino extends DinoQueries
       System.out.print("Please Enter User Password: ");
       password = input.nextLine();
       System.out.println("");
-
-      pre = conn.prepareStatement(preStmt);
-
-      pre.setString(1, login);
-      pre.setString(2, password);
-
-      result = pre.executeQuery();
-
-      if(result.next())
+      
+      if(log == 1)
       {
-        type = result.getString("u_type");
-        if(type.equals("HIST"))
-          histLogin = true;
-        else if(type.equals("ADMIN"))
-          adminLogin = true;
+        pre = conn.prepareStatement(logCheck);
+        pre.setString(1, login);
+        pre.setString(2, password);
+        result = pre.executeQuery();
 
-        System.out.println("Login Successful.");
-        System.out.println("Welcome " + login);
-        
-      }
-     else
+        if(result.next())
+        {
+          type = result.getString("u_type");
+          if(type.equals("HIST"))
+            histLogin = true;
+          else if(type.equals("ADMIN"))
+            adminLogin = true;
+
+          System.out.println("Login Successful.");
+          System.out.println("Welcome " + login);
+        }
+       else
         System.out.println("User Name or Password is Incorrect.");
+      }
+      else if(log == 2)
+      {
+        pre = conn.prepareStatement(logCheck2);
+        pre.setString(1, login);
+        result = pre.executeQuery();
+        if(result.next())
+          System.out.println("Username already taken.");
+        else
+        {
+          pre = conn.prepareStatement(logCreate);
+          pre.setString(1, login);
+          pre.setString(2, password);
+          pre.setString(3, "USER");
+          pre.executeUpdate();
+          System.out.println("Account Created.");
+          System.out.println("Welcome " + login);
+        }
+      }
+      else 
+          System.out.println("Error executing login/ account creation");
 
 
   }
@@ -187,6 +211,7 @@ public class Dino extends DinoQueries
   {
      ResultSet result = null;
      Statement stmt = conn.createStatement();
+     PreparedStatement pre = null;
      String res = "";
  
      table = table.toLowerCase();
@@ -311,11 +336,22 @@ public class Dino extends DinoQueries
      else if(table.equals("requests") && (histLogin || adminLogin))
      {
        if(dinosaur.equals("all"))
+       {
         res = selRequest;
-       else
-        res = "select * from requests where r_name = \'"+dinosaur+"\' and r_updatestatus = 'f'"; //15
-
         result = stmt.executeQuery(res);
+       }
+       else if(dinosaur.equals(login))
+       {
+         pre = conn.prepareStatement(reqFind);
+         pre.setString(1, login);
+         result = pre.executeQuery();
+       }
+       else
+       {
+        pre = conn.prepareStatement(selRequestSpec);
+        pre.setString(1, dinosaur);
+        result = pre.executeQuery();
+       }
         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
         while(result.next())
         {
@@ -324,6 +360,7 @@ public class Dino extends DinoQueries
           System.out.println("Comment 1: " + result.getString(3));
           System.out.println("Comment 2: " + result.getString(4));
           System.out.println("Update Status: " + result.getString(5));
+          System.out.println("User Name: " + result.getString(6));
           System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
         }
      }
@@ -362,13 +399,16 @@ public class Dino extends DinoQueries
         if(histLogin || adminLogin)
         {
             System.out.println("15: Submit a Request");
-            System.out.println("16: Look up Request Update Status.");
-            System.out.println("17: Look up Request Update Status by Dinosaur");        
+            System.out.println("16: Look up Complete Request List");
+            System.out.println("17: Look up Request Update Status by Dinosaur");
+            System.out.println("18: Look up Own Request Status");        
         }
         if(adminLogin)
         {
-          System.out.println("18: Delete Dinosaur From Database.");
           System.out.println("19: Insert Dinosaur Into Database.");
+          System.out.println("20: Update Dinosaur Info from Database.");
+          System.out.println("21: Delete Dinosaur From Database.");
+          System.out.println("22: Change User Status.");
         }
         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "------------------------" + ANSI_RESET);
         System.out.print("Please enter desired option: ");
@@ -404,16 +444,19 @@ public class Dino extends DinoQueries
           if(in == 15){histQuery1(conn, input);}
           else if(in == 16){getTableInfo(conn, input, "requests", "all");}
           else if(in == 17){histQuery2(conn, input);}
+          else if(in == 18){getTableInfo(conn, input, "requests", login);}
         }
         if(adminLogin)
         {
-          if(in == 18){deleteInfo(conn,input);}
-          else if(in == 19){insertData(conn, input);}
+          if(in == 19){insertData(conn, input);}
+          else if(in == 20){updateData(conn, input);}
+          else if(in == 21){deleteData(conn, input);}
+          else if(in == 22){updateUser(conn, input);}
         }
         if(histLogin)
-          if(in > 17){System.out.println("Invalid Option, Please Try Again.");}
+          if(in > 18){System.out.println("Invalid Option, Please Try Again.");}
         if(adminLogin)
-          if(in > 19){System.out.println("Invalid Option, Please Try Again.");}
+          if(in > 22){System.out.println("Invalid Option, Please Try Again.");}
         if(!histLogin && !adminLogin)
           if(in > 14){System.out.println("Invalid Option, Please Try Again.");}
 
@@ -996,33 +1039,17 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
   public static void histQuery1(Connection conn, Scanner input) throws SQLException
   {
-    ResultSet result = null;
-    PreparedStatement pre = null;
-    Statement stmt = conn.createStatement();
 
+    PreparedStatement pre = null;
     String quickFix = input.nextLine();
-    String preStmt = reqInsert;
-    
-    pre = conn.prepareStatement(preStmt);
+    pre = conn.prepareStatement(reqInsert);
+
     String res, dinoName, tableName, comment1, comment2 = "";
     
     System.out.println("Please Enter Dinosaur Name: ");
     System.out.println("Enter N/A if not applicable");
     dinoName = input.nextLine();
-    
-    if(!(dinoName.equals("N/A")))
-    {
-      res = "select d_name from Dinosaur where d_name = \'"+dinoName+"\'";
-      result = stmt.executeQuery(res);
-      if(result.next())
-        dinoName = result.getString(1);
-      else
-      {
-        System.out.println("Dinosaur Not Found.");
-        return;
-      }
-    }
-
+    dinoName = formatString(dinoName);
     
     System.out.println("Options: Dinosaur, Fossil, Habitat, Location, Physical Traits, Pronunciation, Taxonomy, Time Period");
     System.out.print("Please Enter Table Name: ");
@@ -1042,14 +1069,13 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     pre.setString(3, comment1);
     pre.setString(4, comment2);
     pre.setString(5, "f");
+    pre.setString(6, login);
 
     pre.executeUpdate();
 
     System.out.println("Request Submitted.");
 
-    result.close();
     pre.close();
-    stmt.close();
 }
 
   public static void histQuery2(Connection conn, Scanner input) throws SQLException

@@ -136,8 +136,13 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
     //Terminal Colors End
 
-    //Queries Used UserTableInfo
+
+    //Queries used userLogin
     protected static String logCheck = "select * from userbase where u_username = ? and u_password = ?;"; //1
+    protected static String logCheck2 = "select u_username from userbase where u_username = ?"; //22 (again maybe?)
+    protected static String logCreate = "insert into userbase values(?,?,?);";
+    
+    //Queries Used UserTableInfo
     protected static String selFossil = "select d_name, f_fossilData, f_fossilEvidence, f_period from Dinosaur, fossil where d_dinokey = f_dinokey"; //2
     protected static String selDino = "select * from Dinosaur"; //3
     protected static String selFossil2 = "select * from fossil";
@@ -146,6 +151,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     protected static String selTax = "select * from taxonomy";
     protected static String selTime = "select tp_comment, tp_name from timeperiod"; //4
     protected static String selRequest =  "select * from requests";
+    protected static String selRequestSpec = "select * from requests where r_name = ? and r_updatestatus = 'f'"; 
     //UserTableInfo Queries End
 
     //Queries UserQuery1
@@ -250,8 +256,12 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery14 End
 
     //Queries HistQuery1
-    protected static String reqInsert = "insert into requests values(?, ?, ?, ?, ?)";
+    protected static String reqInsert = "insert into requests values(?, ?, ?, ?, ?, ?)";
     //Queries HistQuery1 End
+
+    //Queries FindHist
+    protected static String reqFind = "select * from requests where r_username = ?"; //21
+
 
     //Queries deleteInfo
     protected static String delDino = "delete from Dinosaur where d_name = ?;";
@@ -262,6 +272,8 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     protected static String updateDinoLoc = "update location set l_dinokey = ? where l_nation = ?;";
     //Queries deleteInfo End
 
+     
+
     //Queries insertData
     protected static String insertDino = "insert into Dinosaur values(?, ?, ?, ?, ?, ?, ?)";
     protected static String insertFossil = "insert into fossil values(?, ?, ?, ?);";
@@ -270,6 +282,20 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     protected static String insertTax = "insert into taxonomy values(?, ?, ?, ?, ?);";
     protected static String findDinoLoc2 = "select * from location where l_nation = ?"; //20 (maybe? might be a stretch)
     //Queries insertData End
+
+     //Arrays Used InsertInfo
+     protected static String tables[]  = new String[]{selDino, selFossil2, selPhysTrait, selPronounce, selTax};
+     protected static String entries[] = new String[]{insertDino, insertFossil, insertPhysTrait, insertPronounce, insertTax,};
+     //Arrays End
+
+    //Queries UpdateData
+    protected static String[] tableNames = new String[]{"Dinosaur", "fossil", "physicalTraits", "pronunciation", "taxonomy", "location"};
+    //Queries UpdateData End
+
+    //Queries UpdateUser
+    protected static String selUser = "select u_username, u_type from userbase;"; //23?
+    protected static String updateStatus = "update userbase set u_type = ? where u_username = ?";
+    //Queries UpdateUser End
 
     public static String formatString(String in) //formats String so that the input is always right no matter how the user types it
     { 
@@ -281,7 +307,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         return in;
 
     }
-    public static void deleteInfo(Connection conn, Scanner input) throws SQLException
+    public static void deleteData(Connection conn, Scanner input) throws SQLException
   {
     ResultSet result = null;
     PreparedStatement pre = null;
@@ -359,24 +385,8 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
 
         String quickFix = input.nextLine();
         String res, preStmt, colName, dinoName, info = "";
-        String entries[]  = new String[5];
-        String tables[] = new String[5];
-        
         String dinoKey = "";
         int maxKey, counter = 0;
-
-
-        tables[0] = selDino;
-        tables[1] = selFossil2;
-        tables[2] = selPhysTrait;
-        tables[3] = selPronounce;
-        tables[4] = selTax;
-
-        entries[0] = insertDino;
-        entries[1] = insertFossil;
-        entries[2] = insertPhysTrait;
-        entries[3] = insertPronounce;
-        entries[4] = insertTax;
 
         System.out.print("Enter Dinosaur You'd Like to insert: ");
         dinoName = input.nextLine();
@@ -471,6 +481,201 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         pre.close();
         stmt.close();
         result.close();
+
+    }
+
+    public static void updateData(Connection conn, Scanner input) throws SQLException
+    {
+        String quickFix = input.nextLine();
+        ResultSet result = null;
+        Statement stmt = conn.createStatement();
+        PreparedStatement pre = null;
+
+        String info, preStmt, value1, value2 = "";
+        String res = "";
+        String tbl = "";
+        String setAttrib = "";
+        String setAttrib2 = "";
+        int num, dinoKey = 0;
+        
+        System.out.println("What Table Would You like to update: 1 for Yes, 2 for No");
+        for(int i = 0; i < tableNames.length; i++)
+        {
+            System.out.print(tableNames[i] + "?: ");
+            num = input.nextInt();
+            if(num == 1)
+            {
+                tbl = tableNames[i];
+                if(tbl.equals("location"))
+                    break;
+                res = tables[i];
+                break;
+            }
+        }
+
+        if(tbl.equals("location"))
+        {
+            quickFix = input.nextLine();
+
+            System.out.print("Enter Dinosaur Name: ");
+            info = input.nextLine();
+            info = formatString(info);
+            System.out.println();
+
+            pre = conn.prepareStatement(dinoCheck);
+            pre.setString(1, info);
+            result = pre.executeQuery();
+            if(result.next())
+                dinoKey = result.getInt(2);
+            else
+            {
+                System.out.println("Dinosaur not found.");
+                return;
+            }
+            
+            System.out.print("Enter Nation: ");
+            info = input.nextLine();
+            info = info.toLowerCase();
+            System.out.println();
+
+            preStmt = findDinoLoc2;
+            pre = conn.prepareStatement(preStmt);
+            pre.setString(1, info);
+            result = pre.executeQuery();
+            if(result.next())
+            {
+             String loc = result.getString("l_dinokey");
+                String locNation = result.getString("l_nation");
+                loc = loc + dinoKey + ",";
+                preStmt = updateDinoLoc;
+                pre = conn.prepareStatement(preStmt);
+                pre.setString(1, loc);
+                pre.setString(2, locNation);
+             pre.executeUpdate();
+            }
+            else
+              System.out.println("nation not found.");
+            
+            System.out.println("Update Executed."); 
+            pre.close();
+            result.close();
+            stmt.close();
+            return;
+        
+        }
+        result = stmt.executeQuery(res);
+        ResultSetMetaData resultMeta = result.getMetaData();
+        int colNumber = resultMeta.getColumnCount();
+        System.out.println("Attribute You'd Like to Set: 1 for Yes, 2 for No");
+        for(int i = 1; i <= colNumber; i++)
+        {
+            System.out.print(resultMeta.getColumnName(i) + "?: ");
+            num = input.nextInt();
+            if(num == 1)
+            {
+                setAttrib = resultMeta.getColumnName(i);
+                break;
+            }
+
+        }
+
+        System.out.println("Set Condition Attribute For Update To Execute: 1 for Yes, 2 for No");
+        for(int i = 1; i <= colNumber; i++)
+        {
+            System.out.print(resultMeta.getColumnName(i) + "?: ");
+            num = input.nextInt();
+            if(num == 1)
+            {
+                setAttrib2 = resultMeta.getColumnName(i);
+                break;
+            }
+
+        }
+
+        preStmt = "update " + tbl + " set " + setAttrib + " = ? where " + setAttrib2 + " = ?";
+        System.out.println(preStmt);
+        pre = conn.prepareStatement(preStmt);
+
+        quickFix = input.nextLine();
+
+        System.out.print("Set value for " + setAttrib + ": ");
+        value1 = input.nextLine();
+        if(setAttrib.equals("d_name") || setAttrib.equals("pt_name") || setAttrib.equals("p_name") || setAttrib.equals("t_genus"))
+            value1 = formatString(value1);
+        else
+            value1 = value1.toLowerCase();
+        System.out.println();
+
+        System.out.print("Set Condition Value For " + setAttrib2 + ": ");
+        value2 = input.nextLine();
+        if(setAttrib.equals("d_name") || setAttrib.equals("pt_name") || setAttrib.equals("p_name") || setAttrib.equals("t_genus"))
+            value2 = formatString(value2);
+        else
+            value2 = value2.toLowerCase();
+        System.out.println();
+
+        pre.setString(1, value1);
+        pre.setString(2, value2);
+
+        System.out.println("Update Executed.");
+        pre.executeUpdate(); 
+
+        pre.close();
+        result.close();
+        stmt.close();
+        //resultMeta.close();
+    }
+
+    public static void updateUser(Connection conn, Scanner input) throws SQLException
+    {
+        ResultSet result = null;
+        PreparedStatement pre = conn.prepareStatement(updateStatus);
+        Statement stmt = conn.createStatement();
+        String quickFix = input.nextLine();
+        String user = "";
+        String oldStatus = "";
+        String newStatus = "";
+        int in = 0;
+
+        System.out.println("Which User's Status Would You Like to Update?: 1 for Yes, 2 for No");
+        result = stmt.executeQuery(selUser);
+        while(result.next())
+        {
+            System.out.print("User: " + result.getString(1) + " Status: " + result.getString(2) + "?: ");
+            in = input.nextInt();
+            if(in == 1)
+            {
+                user = result.getString(1);
+                oldStatus = result.getString(2);
+                break;
+            }
+        }
+
+        quickFix = input.nextLine();
+        System.out.println("Options: User, Hist, Admin");
+        System.out.print("What New Status Would You Like?: ");
+        newStatus = input.nextLine();
+        newStatus = newStatus.toUpperCase();
+        System.out.println();
+
+        if(newStatus.equals("USER") || newStatus.equals("HIST") || newStatus.equals("ADMIN"))
+        {
+           pre.setString(1, newStatus);
+           pre.setString(2, user);
+           pre.executeUpdate();
+           System.out.println("Update Executed.");
+           System.out.println("User " + user + " Old Status: " + oldStatus);
+           System.out.println("User " + user + " New Status: " + newStatus);
+
+        }
+        else
+            System.out.println("Invalid Input.");
+        
+        pre.close();
+        result.close();
+        stmt.close();
+
+
 
     }
 }
