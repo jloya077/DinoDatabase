@@ -256,7 +256,8 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries UserQuery14 End
 
     //Queries HistQuery1
-    protected static String reqInsert = "insert into requests values(?, ?, ?, ?, ?, ?)";
+    protected static String reqInsert = "insert into requests values(?, ?, ?, ?, ?, ?, ?)";
+    protected static String reqMaxKey = "select max(r_requestkey) from requests;"; //24?
     //Queries HistQuery1 End
 
     //Queries FindHist

@@ -1043,11 +1043,26 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
   public static void histQuery1(Connection conn, Scanner input) throws SQLException
   {
 
+    ResultSet result = null;
     PreparedStatement pre = null;
+    Statement stmt = conn.createStatement();
+
     String quickFix = input.nextLine();
     pre = conn.prepareStatement(reqInsert);
 
     String res, dinoName, tableName, comment1, comment2 = "";
+    int maxKey = 0;
+
+    
+    result = stmt.executeQuery(reqMaxKey); //find max key
+    if(result.next())
+    {
+      maxKey = result.getInt(1);
+      maxKey++;
+    }
+    else
+      maxKey++;
+
     
     System.out.println("Please Enter Dinosaur Name: ");
     System.out.println("Enter N/A if not applicable");
@@ -1073,6 +1088,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     pre.setString(4, comment2);
     pre.setString(5, "f");
     pre.setString(6, login);
+    pre.setInt(7, maxKey);
 
     pre.executeUpdate();
 
