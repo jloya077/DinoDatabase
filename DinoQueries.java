@@ -384,7 +384,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         Statement stmt = conn.createStatement();
 
         String quickFix = input.nextLine();
-        String res, preStmt, colName, dinoName, info = "";
+        String colName, dinoName, info = "";
         String dinoKey = "";
         int maxKey, counter = 0;
 
@@ -394,8 +394,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         System.out.println();
 
 
-        preStmt = dinoCheck;
-        pre = conn.prepareStatement(preStmt);
+        pre = conn.prepareStatement(dinoCheck);
         pre.setString(1, dinoName);
         result = pre.executeQuery();
         if(result.next())
@@ -404,8 +403,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
             return;
         }
 
-        res = maxDinoKey;
-        result = stmt.executeQuery(res);
+        result = stmt.executeQuery(maxDinoKey);
         if(result.next())
         {
             maxKey = result.getInt(1);
@@ -418,8 +416,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
             result = stmt.executeQuery(tables[counter]);
             ResultSetMetaData resultMeta = result.getMetaData();
             int colNumber = resultMeta.getColumnCount();
-            preStmt = entries[counter];
-            pre = conn.prepareStatement(preStmt);
+            pre = conn.prepareStatement(entries[counter]);
             System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
             for(int i = 1; i <= colNumber; i++)
             {
@@ -458,8 +455,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         info = info.toLowerCase();
         System.out.println();
 
-        preStmt = findDinoLoc2;
-        pre = conn.prepareStatement(preStmt);
+        pre = conn.prepareStatement(findDinoLoc2);
         pre.setString(1, info);
         result = pre.executeQuery();
         if(result.next())
@@ -467,8 +463,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
             String loc = result.getString("l_dinokey");
             String locNation = result.getString("l_nation");
             loc = loc + dinoKey + ",";
-            preStmt = updateDinoLoc;
-            pre = conn.prepareStatement(preStmt);
+            pre = conn.prepareStatement(updateDinoLoc);
             pre.setString(1, loc);
             pre.setString(2, locNation);
             pre.executeUpdate();
@@ -502,7 +497,16 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         for(int i = 0; i < tableNames.length; i++)
         {
             System.out.print(tableNames[i] + "?: ");
-            num = input.nextInt();
+            try
+            {
+              num = input.nextInt();
+            }
+            catch(InputMismatchException e)
+            {
+              System.out.println("Invalid Input.");
+              input.next();
+              return;
+            }
             if(num == 1)
             {
                 tbl = tableNames[i];
@@ -538,8 +542,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
             info = info.toLowerCase();
             System.out.println();
 
-            preStmt = findDinoLoc2;
-            pre = conn.prepareStatement(preStmt);
+            pre = conn.prepareStatement(findDinoLoc2);
             pre.setString(1, info);
             result = pre.executeQuery();
             if(result.next())
@@ -547,8 +550,8 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
              String loc = result.getString("l_dinokey");
                 String locNation = result.getString("l_nation");
                 loc = loc + dinoKey + ",";
-                preStmt = updateDinoLoc;
-                pre = conn.prepareStatement(preStmt);
+              
+                pre = conn.prepareStatement(updateDinoLoc);
                 pre.setString(1, loc);
                 pre.setString(2, locNation);
              pre.executeUpdate();
@@ -570,7 +573,16 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         for(int i = 1; i <= colNumber; i++)
         {
             System.out.print(resultMeta.getColumnName(i) + "?: ");
-            num = input.nextInt();
+            try
+            {
+             num = input.nextInt();
+            }
+            catch(InputMismatchException e)
+            {
+              System.out.println("Invalid Input.");
+              input.next();
+              return;
+            }
             if(num == 1)
             {
                 setAttrib = resultMeta.getColumnName(i);
@@ -583,7 +595,16 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         for(int i = 1; i <= colNumber; i++)
         {
             System.out.print(resultMeta.getColumnName(i) + "?: ");
-            num = input.nextInt();
+            try
+            {
+              num = input.nextInt();
+            }
+            catch(InputMismatchException e)
+            {
+              System.out.println("Invalid Input.");
+              input.next();
+              return;
+            }
             if(num == 1)
             {
                 setAttrib2 = resultMeta.getColumnName(i);
@@ -593,7 +614,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         }
 
         preStmt = "update " + tbl + " set " + setAttrib + " = ? where " + setAttrib2 + " = ?";
-        System.out.println(preStmt);
+        //System.out.println(preStmt);
         pre = conn.prepareStatement(preStmt);
 
         quickFix = input.nextLine();
@@ -642,7 +663,16 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         while(result.next())
         {
             System.out.print("User: " + result.getString(1) + " Status: " + result.getString(2) + "?: ");
-            in = input.nextInt();
+            try
+            {
+              in = input.nextInt();
+            }
+            catch(InputMismatchException e)
+            {
+              System.out.println("Invalid Input.");
+              input.next();
+              return;
+            }
             if(in == 1)
             {
                 user = result.getString(1);

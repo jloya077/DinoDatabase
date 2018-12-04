@@ -48,7 +48,7 @@ public class Dino extends DinoQueries
         catch(InputMismatchException e)
         {
           System.out.println("Invalid Input, Please Try Again.");
-          input = new Scanner(System.in);
+          input.next();
         }
 
         System.out.println();
@@ -420,7 +420,7 @@ public class Dino extends DinoQueries
         catch(InputMismatchException e)
         {
           System.out.println("Invalid Input, Please Try Again.");
-          input = new Scanner(System.in);
+          input.next();
         }
         System.out.println();
 
@@ -468,13 +468,12 @@ public class Dino extends DinoQueries
     ResultSet result = null;
     Statement stmt = conn.createStatement();
     int maxKey = 0;
-    int random = 0;
+    int random, answer = 0;
     String res = "";
     String dinoName = "";
     String in = "";
 
-    res = maxDinoKey; //4
-    result = stmt.executeQuery(res);
+    result = stmt.executeQuery(maxDinoKey);
     if(result.next())
     {
       maxKey = result.getInt(1);
@@ -497,7 +496,16 @@ public class Dino extends DinoQueries
 
     System.out.println("Would you like more information on " + dinoName +"?");
     System.out.println("1: Yes, 2: No");
-    int answer = input.nextInt();
+    try
+    {
+      answer = input.nextInt();
+    }
+    catch(InputMismatchException e)
+    {
+      System.out.println("Invalid Input.");
+      input.next();
+      return;
+    }
     if(answer == 1)
     {
       userTableInfo(conn, input, dinoName);
@@ -521,7 +529,7 @@ public class Dino extends DinoQueries
     ResultSet result = null; //initialize ResultSet
     PreparedStatement pre = null; //initialize prepared statement
     Statement stmt = conn.createStatement(); //initialize statement
-    int dinoKey = 0; //initialize variables
+    int dinoKey, answer = 0; //initialize variables
     String dinoName = "";
     String res = "";
 
@@ -582,7 +590,16 @@ public class Dino extends DinoQueries
 
     System.out.println("Would you like more information on " + dinoName +"?");
     System.out.println("1: Yes, 2: No");
-    int answer = input.nextInt();
+    try
+    {
+      answer = input.nextInt();
+    }
+    catch(InputMismatchException e)
+    {
+      System.out.println("Invalid Input.");
+      input.next();
+      return;
+    }
     if(answer == 1)
     {
       userTableInfo(conn, input, dinoName);
@@ -603,12 +620,10 @@ public class Dino extends DinoQueries
    ResultSet result = null; //initialize results and prepared statement
    PreparedStatement pre = null;
    Statement stmt = conn.createStatement();
-
-   String preStmt = findSpecies;
    String res = "";
    String quickFix = input.nextLine();
 
-   pre = conn.prepareStatement(preStmt);
+   pre = conn.prepareStatement(findSpecies);
    String dinoSpecies = ""; // initialize input
 
    System.out.println("Please Enter Species Name:");
@@ -649,9 +664,7 @@ public static void userQuery5(Connection conn) throws SQLException
   ResultSet result = null;
   Statement stmt = conn.createStatement();
 
-  String res = longDinos;
-
-  result = stmt.executeQuery(res);
+  result = stmt.executeQuery(longDinos);
 
   System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   while(result.next())
@@ -674,8 +687,7 @@ public static void userQuery6(Connection conn, Scanner input) throws SQLExceptio
   int topNum = 0;
   int rank = 1;
 
-  String preStmt = topHeavy;
-  pre = conn.prepareStatement(preStmt);
+  pre = conn.prepareStatement(topHeavy);
 
   System.out.println("Please Enter Number:");
   topNum = input.nextInt();
@@ -705,9 +717,7 @@ public static void userQuery7(Connection conn, Scanner input) throws SQLExceptio
   PreparedStatement pre = null;
   float topNum = 0;
 
-  String preStmt = minHeight;
-
-  pre = conn.prepareStatement(preStmt);
+  pre = conn.prepareStatement(minHeight);
 
   System.out.println("Please Enter Number:");
   topNum = input.nextFloat();
@@ -739,9 +749,8 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
   String res = "";
   String habName = "";
   String dietName = "";
-  String preStmt = numDinosHabDiet;
 
-  pre = conn.prepareStatement(preStmt);
+  pre = conn.prepareStatement(numDinosHabDiet);
   System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
   System.out.println("canyon, river, woodland, swamp, floodplain, unknown");
   System.out.print("Please Select Habitat: ");
@@ -803,8 +812,8 @@ public static void userQuery9(Connection conn, Scanner input) throws SQLExceptio
 
   String dinoType = "";
   String quickFix = input.nextLine();
-  String preStmt = numDinosType;
-  pre = conn.prepareStatement(preStmt);
+  
+  pre = conn.prepareStatement(numDinosType);
 
   System.out.println("Please enter Dinosaur Type:");
   System.out.println("Options: Land, Air, Sea");
@@ -836,9 +845,7 @@ public static void userQuery10(Connection conn) throws SQLException
   ResultSet result = null;
   Statement stmt = conn.createStatement();
 
-  String res = longestDino;
-
-  result = stmt.executeQuery(res);
+  result = stmt.executeQuery(longestDino);
   
   System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
   while(result.next())
@@ -915,9 +922,8 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     String quickFix = input.nextLine();
     String res = "";
     String habName = "";
-    
-    String preStmt = speciesHab;
-    pre = conn.prepareStatement(preStmt);
+
+    pre = conn.prepareStatement(speciesHab);
     
     System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
     System.out.println("canyon, river, woodland, swamp, floodplain, unknown");
@@ -962,8 +968,6 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     ResultSet result = null;
     PreparedStatement pre = null;
 
-    String preStmt = dinoBodyType;
-
     String quickFix = input.nextLine();
     String bodyType = "";
 
@@ -971,7 +975,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     bodyType = input.nextLine();
     System.out.println();
 
-    pre = conn.prepareStatement(preStmt);
+    pre = conn.prepareStatement(dinoBodyType);
     pre.setString(1, "%" + bodyType + "%");
 
     result = pre.executeQuery();
@@ -996,8 +1000,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     String quickFix = input.nextLine();
     String mvmtType, mouthType, dietType = "";
 
-    String preStmt = dinoMvmtMouthDiet;
-    pre = conn.prepareStatement(preStmt);
+    pre = conn.prepareStatement(dinoMvmtMouthDiet);
 
     System.out.println("Options: Land, Air, Water");
     System.out.print("Please Enter Movement Type: ");
