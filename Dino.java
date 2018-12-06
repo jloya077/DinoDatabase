@@ -22,23 +22,46 @@ public class Dino extends DinoQueries
     Connection connection = null;
     connection = connectDatabase(connection);
     Scanner input = new Scanner(System.in);
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + dinoBanner2 + ANSI_RESET);
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + dinoBanner + ANSI_RESET);
+    if(!colorMode)
+    {
+      MainMenu1 = dinoBanner2;
+      MainMenu2 = dinoBanner;
+      Dino = jurassicDino;
+      DinoMenu1 = DivDinoDB;
+      DinoMenu2 = DivDB;
+      UserMenu1 = UserMenu;
+      UserMenu2 = UserMenuDiv;
+      uiDivider = genDiv;
+   }
+   else if(colorMode)
+   {
+    MainMenu1 = colorBanner2;
+    MainMenu2 = colorBanner;
+    Dino = colorDino;
+    DinoMenu1 = colorDivDinoDB;
+    DinoMenu2 = colorDivDB;
+    UserMenu1 = colorUserMenu;
+    UserMenu2 = colorUserMenuDiv;
+    uiDivider = colorgenDiv;
+   }
+
+    System.out.println(MainMenu1);
+    System.out.println(MainMenu2);
     TimeUnit.SECONDS.sleep(1);
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + jurassicDino2 + ANSI_RESET);
+    System.out.println(Dino);
     try
     {
       int in = -1;
       while(true)
       {
         TimeUnit.SECONDS.sleep(2);
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------DinoDatabase Main Menu--------" + ANSI_RESET);
+        System.out.println(DinoMenu1);
         System.out.println("0: Quit Program");
         System.out.println("1: Log in");
         System.out.println("2: Create Account");
         System.out.println("3: Display Search Options");
         System.out.println("4: Log Out");
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------------------------------------" + ANSI_RESET);
+        System.out.println(DinoMenu2);
         System.out.print("Please enter desired option: ");
 
         try
@@ -192,10 +215,10 @@ public class Dino extends DinoQueries
     {
       String tableName = "";
       System.out.println("Which Information would you like?");
-      System.out.println("Options: dinosaur, fossil, physical traits, pronunciation, taxonomy, time period ");
+      System.out.println("Options: dinosaur, fossil, physical traits, pronunciation, taxonomy, time period: ");
       System.out.println("Enter 'exit' to stop");
       
-      System.out.println("Enter Table: ");
+      System.out.print("Enter Table: ");
       tableName = input.nextLine();
       System.out.println();
 
@@ -226,7 +249,7 @@ public class Dino extends DinoQueries
               "where d_name = \'"+dinosaur+"\'";
              
        result = stmt.executeQuery(res);
-       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+       System.out.println(uiDivider);
        while(result.next())
        {
          System.out.println("Dino key: " + result.getInt(1));
@@ -236,7 +259,7 @@ public class Dino extends DinoQueries
          System.out.println("Description: " + result.getString(5)); 
          System.out.println("Type: " + result.getString(6)); 
          System.out.println("Habitat Key: " + result.getInt(7));
-         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+         System.out.println(uiDivider);
        }
  
      }
@@ -250,14 +273,14 @@ public class Dino extends DinoQueries
         result = stmt.executeQuery(res);
  
   
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+        System.out.println(uiDivider);
        while(result.next())
        {
          System.out.println("Name: " + result.getString(1)); 
          System.out.println("Fossil Data: " + result.getString(2));
          System.out.println("Fossil Evidence: " + result.getString(3));
          System.out.println("Time Period: " + result.getString(4));
-         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+         System.out.println(uiDivider);
        }
      }
      else if(table.equals("physical traits"))
@@ -268,7 +291,7 @@ public class Dino extends DinoQueries
         res = "select * from physicalTraits where pt_name = \'"+dinosaur+"\'"; 
 
        result = stmt.executeQuery(res);
-       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+       System.out.println(uiDivider);
        while(result.next())
        {
          System.out.println("Name: " + result.getString(2));
@@ -279,8 +302,8 @@ public class Dino extends DinoQueries
          System.out.println("Weight: " + result.getString(7));
          System.out.println("Mouth Type: " + result.getString(8));
          System.out.println("Defining Trait: " + result.getString(9));
-         System.out.println("Class: " + result.getString(10));
-         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+         //System.out.println("Class: " + result.getString(10));
+         System.out.println(uiDivider);
        }
      }
      else if(table.equals("pronunciation"))
@@ -290,13 +313,13 @@ public class Dino extends DinoQueries
        else
         res = "select * from pronunciation where p_name = \'"+dinosaur+"\'";
        result = stmt.executeQuery(res);
-       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+       System.out.println(uiDivider);
        while(result.next())
        {
          System.out.println("Name: " + result.getString(1));
          System.out.println("Enunciation: " + result.getString(2));
          System.out.println("Meaning: " + result.getString(3));
-         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+         System.out.println(uiDivider);
        }
      }
      else if(table.equals("taxonomy"))
@@ -307,14 +330,14 @@ public class Dino extends DinoQueries
         res = "select * from taxonomy where t_genus = \'"+dinosaur+"\'";
        
        result = stmt.executeQuery(res);
-       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+       System.out.println(uiDivider);
        while(result.next())
        {
          System.out.println("Genus: " + result.getString(1));
          System.out.println("Species: " + result.getString(2));
          System.out.println("Family: " + result.getString(3));
          System.out.println("Order: " + result.getString(4));
-         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+         System.out.println(uiDivider);
        }
      }
      else if(table.equals("time period"))
@@ -325,12 +348,12 @@ public class Dino extends DinoQueries
         res = "select tp_comment, tp_name from Dinosaur, timeperiod where d_timeperiod = tp_name and d_name = \'"+dinosaur+"\'";
        
        result = stmt.executeQuery(res);
-       System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+       System.out.println(uiDivider);
        while(result.next())
        {
          System.out.println("Time Period: " + result.getString(2));
          System.out.println("Info: " + result.getString(1));
-         System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+         System.out.println(uiDivider);
        }
      }
      else if(table.equals("requests") && (histLogin || adminLogin))
@@ -352,7 +375,7 @@ public class Dino extends DinoQueries
         pre.setString(1, dinosaur);
         result = pre.executeQuery();
        }
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+       System.out.println(uiDivider);
         while(result.next())
         {
           System.out.println("Name: " + result.getString(1));
@@ -361,7 +384,7 @@ public class Dino extends DinoQueries
           System.out.println("Comment 2: " + result.getString(4));
           System.out.println("Update Status: " + result.getString(5));
           System.out.println("User Name: " + result.getString(6));
-          System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+          System.out.println(uiDivider);
         }
      }
      else 
@@ -380,7 +403,7 @@ public class Dino extends DinoQueries
     while(true)
     {
         TimeUnit.SECONDS.sleep(2);
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------User Menu--------" + ANSI_RESET);
+        System.out.println(UserMenu1);
         System.out.println("0: Exit User Menu");
         System.out.println("1: I'm Feeling Lucky");
         System.out.println("2: Display Complete Dinosaur Data");
@@ -405,12 +428,14 @@ public class Dino extends DinoQueries
         }
         if(adminLogin)
         {
-          System.out.println("19: Insert Dinosaur Into Database.");
-          System.out.println("20: Update Dinosaur Info from Database.");
-          System.out.println("21: Delete Dinosaur From Database.");
-          System.out.println("22: Change User Status.");
+          System.out.println("19: Insert Dinosaur Into Database");
+          System.out.println("20: Update Dinosaur Info from Database");
+          System.out.println("21: Delete Dinosaur From Database");
+          System.out.println("22: Change User Status");
+          System.out.println("23: Change Request Status");
+          System.out.println("24: Delete Fulfilled Requests");
         }
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "------------------------" + ANSI_RESET);
+        System.out.println(UserMenu2);
         System.out.print("Please enter desired option: ");
 
         try
@@ -452,11 +477,13 @@ public class Dino extends DinoQueries
           else if(in == 20){updateData(conn, input);}
           else if(in == 21){deleteData(conn, input);}
           else if(in == 22){updateUser(conn, input);}
+          else if(in == 23){updateRequest(conn, input);}
+          else if(in == 24){delRequest(conn, input);}
         }
         if(histLogin)
           if(in > 18){System.out.println("Invalid Option, Please Try Again.");}
         if(adminLogin)
-          if(in > 22){System.out.println("Invalid Option, Please Try Again.");}
+          if(in > 24){System.out.println("Invalid Option, Please Try Again.");}
         if(!histLogin && !adminLogin)
           if(in > 14){System.out.println("Invalid Option, Please Try Again.");}
 
@@ -486,9 +513,9 @@ public class Dino extends DinoQueries
     if(result.next())
     {
       dinoName = result.getString(1);
-      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+      System.out.println(uiDivider);
       System.out.println("Dinosaur: " + result.getString(1));
-      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+      System.out.println(uiDivider);
     }
 
     stmt.close();
@@ -535,9 +562,10 @@ public class Dino extends DinoQueries
 
     String quickFix = input.nextLine(); //for some reason input skips over, doing this fixes it.
 
-    System.out.println("Please Enter Dinosaur Name:");
+    System.out.print("Please Enter Dinosaur Name: ");
     dinoName = input.nextLine();
     dinoName = formatString(dinoName); //format into correct form
+    System.out.println();
 
     pre = conn.prepareStatement(dinoCheck);
     pre.setString(1, dinoName);
@@ -550,7 +578,6 @@ public class Dino extends DinoQueries
     else
     {
       System.out.println("Dinosaur not in database."); //check in case dinosaur not in database or something else happens
-      System.out.println(dinoName);
       return;
     }
     
@@ -564,7 +591,7 @@ public class Dino extends DinoQueries
     //print out results
     if(result.next())
     {
-      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+      System.out.println(uiDivider);
       System.out.println("Name: " + result.getString(1));
       System.out.println("Habitat: " + result.getString(3));
       System.out.println("Years Ago: " + result.getInt(4));
@@ -582,7 +609,7 @@ public class Dino extends DinoQueries
       System.out.print(result.getString(2) + ", ");
     }
     System.out.println();
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
 
     pre.close(); //close statements and resultset
     stmt.close();
@@ -590,6 +617,7 @@ public class Dino extends DinoQueries
 
     System.out.println("Would you like more information on " + dinoName +"?");
     System.out.println("1: Yes, 2: No");
+    System.out.print("Enter Response: ");
     try
     {
       answer = input.nextInt();
@@ -600,6 +628,7 @@ public class Dino extends DinoQueries
       input.next();
       return;
     }
+    System.out.println();
     if(answer == 1)
     {
       userTableInfo(conn, input, dinoName);
@@ -626,10 +655,12 @@ public class Dino extends DinoQueries
    pre = conn.prepareStatement(findSpecies);
    String dinoSpecies = ""; // initialize input
 
-   System.out.println("Please Enter Species Name:");
    System.out.println("Example Format: A. horneri");
+   System.out.print("Please Enter Species Name: ");
    
    dinoSpecies = input.nextLine();
+
+   System.out.println();
 
    res = "select t_species from taxonomy where t_species = \'"+dinoSpecies+"\'";
    result = stmt.executeQuery(res);
@@ -645,12 +676,12 @@ public class Dino extends DinoQueries
 
    pre.setString(1, dinoSpecies);
    result = pre.executeQuery();
-   System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+   System.out.println(uiDivider);
    while(result.next())
    {
     
      System.out.println("Name: " + result.getString(1));
-     System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+     System.out.println(uiDivider);
    }
 
    pre.close();
@@ -666,13 +697,13 @@ public static void userQuery5(Connection conn) throws SQLException
 
   result = stmt.executeQuery(longDinos);
 
-  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+  System.out.println(uiDivider);
   while(result.next())
   {
     System.out.println("Habitat: " + result.getString(1));
     System.out.println("Dinosaur: " + result.getString(2));
     System.out.println("Length: " + result.getFloat(3));
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
   }
 
   stmt.close();
@@ -689,20 +720,30 @@ public static void userQuery6(Connection conn, Scanner input) throws SQLExceptio
 
   pre = conn.prepareStatement(topHeavy);
 
-  System.out.println("Please Enter Number:");
-  topNum = input.nextInt();
+  System.out.print("Please Enter Number: ");
+  try
+  {
+    topNum = input.nextInt();
+  }
+  catch(InputMismatchException e)
+  {
+    System.out.println("Invalid Input.");
+    input.next();
+    return;
+  }
+  System.out.println();
+
 
   pre.setInt(1, topNum);
   result = pre.executeQuery();
 
-  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
-  while(result.next())
+  System.out.println(uiDivider);
   {
     System.out.println("Rank: " + rank);
     System.out.println("Habitat: " + result.getString(1));
     System.out.println("Dinosaur: " + result.getString(2));
     System.out.println("Weight: " + result.getFloat(3));
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
     rank++;
 
   }
@@ -719,18 +760,28 @@ public static void userQuery7(Connection conn, Scanner input) throws SQLExceptio
 
   pre = conn.prepareStatement(minHeight);
 
-  System.out.println("Please Enter Number:");
-  topNum = input.nextFloat();
+  System.out.print("Please Enter Number: ");
+  try
+  {
+    topNum = input.nextFloat();
+  }
+  catch(InputMismatchException e)
+  {
+    System.out.println("Invalid Input.");
+    input.next();
+    return;
+  }
+  System.out.println();
 
   pre.setFloat(1, topNum);
   result = pre.executeQuery();
 
-  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+  System.out.println(uiDivider);
   while(result.next())
   {
     System.out.println("Dinosaur: " + result.getString(1));
     System.out.println("Height: " + result.getFloat(2));
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
 
   }
 
@@ -750,7 +801,6 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
   String habName = "";
   String dietName = "";
 
-  pre = conn.prepareStatement(numDinosHabDiet);
   System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
   System.out.println("canyon, river, woodland, swamp, floodplain, unknown");
   System.out.print("Please Select Habitat: ");
@@ -759,8 +809,10 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
   habName = habName.toLowerCase();
   System.out.println();
 
-  res = "select h_name from habitat where h_name = \'"+habName+"\'";
-  result = stmt.executeQuery(res);
+  pre = conn.prepareStatement(findHab);
+  pre.setString(1, habName);
+  result = pre.executeQuery();
+
   if(result.next())
     habName = result.getString("h_name");
   else
@@ -770,12 +822,16 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
   }
 
   System.out.println("Please select Diet type.");
-  System.out.println("Options: herbivore, carnivore");
+  System.out.print("Options: herbivore, carnivore: ");
   
   dietName = input.nextLine();
   dietName = dietName.toLowerCase();
-  res = "select d_diet from dinosaur where d_diet = \'"+dietName+"\'";
-  result = stmt.executeQuery(res);
+
+  System.out.println();
+
+  pre = conn.prepareStatement(findDiet);
+  pre.setString(1, dietName);
+  result = pre.executeQuery();
   if(result.next())
     dietName = result.getString("d_diet");
   else
@@ -784,15 +840,16 @@ public static void userQuery8(Connection conn, Scanner input) throws SQLExceptio
     return;
   }
 
+  pre = conn.prepareStatement(numDinosHabDiet);
   pre.setString(1, habName);
   pre.setString(2, dietName);
 
   result = pre.executeQuery();
   if(result.next())
   {
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
     System.out.println("Number of Dinosaurs with " + dietName + " diet and "+ habName + " habitat: " + result.getInt(1));
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
   }
   else
   {
@@ -815,20 +872,21 @@ public static void userQuery9(Connection conn, Scanner input) throws SQLExceptio
   
   pre = conn.prepareStatement(numDinosType);
 
-  System.out.println("Please enter Dinosaur Type:");
   System.out.println("Options: Land, Air, Sea");
+  System.out.print("Please enter Dinosaur Type: ");
 
   dinoType = input.nextLine();
   dinoType = dinoType.toLowerCase();
+  System.out.println();
 
   pre.setString(1, "%" + dinoType + "%"); //do this to fill in LIKE keyword
 
   result = pre.executeQuery();
   if(result.next())
   {
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
     System.out.println("Number of dinosaurs of " + dinoType + " type: " + result.getInt(1));
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
   }
   else
   {
@@ -847,13 +905,13 @@ public static void userQuery10(Connection conn) throws SQLException
 
   result = stmt.executeQuery(longestDino);
   
-  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+  System.out.println(uiDivider);
   while(result.next())
   {
     System.out.println("Name: " + result.getString(1));
     System.out.println("Enunciation: " + result.getString(2));
     System.out.println("Length: " + result.getInt(3));
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
   }
   stmt.close();
   result.close();
@@ -868,10 +926,11 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
   String quickFix = input.nextLine();
   String trait, preStmt = "";
 
-  System.out.println("Please select  measurement type: ");
   System.out.println("Options: Length, Height, Weight");
+  System.out.print("Please select  measurement type: ");
   trait = input.nextLine();
   trait = formatString(trait);
+  System.out.println();
 
   if(trait.equals("Length"))
     preStmt = dinoLength;
@@ -887,11 +946,29 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
   pre = conn.prepareStatement(preStmt);
   System.out.print("Please enter mininum: ");
-  min = input.nextFloat();
+  try
+  {
+    min = input.nextFloat();
+  }
+  catch(InputMismatchException e)
+  {
+    System.out.println("Invalid Input.");
+    input.next();
+    return;
+  }
   System.out.println();
 
   System.out.print("Please enter maximum: ");
-  max = input.nextFloat();
+  try
+  {
+    max = input.nextFloat();
+  }
+  catch(InputMismatchException e)
+  {
+    System.out.println("Invalid Input.");
+    input.next();
+    return;
+  }
   System.out.println();
 
   pre.setFloat(1, min);
@@ -899,12 +976,12 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
   result = pre.executeQuery();
 
-  System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+  System.out.println(uiDivider);
   while(result.next())
   {
     System.out.println("Name: " + result.getString(1));
     System.out.println(trait + ": " + result.getFloat(2));
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
 
 
   }
@@ -920,10 +997,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     Statement stmt = conn.createStatement();
     
     String quickFix = input.nextLine();
-    String res = "";
     String habName = "";
-
-    pre = conn.prepareStatement(speciesHab);
     
     System.out.println("Options: forest, aquatic, desert, plains, arid grassland, mountain,");
     System.out.println("canyon, river, woodland, swamp, floodplain, unknown");
@@ -933,8 +1007,9 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     habName = habName.toLowerCase();
     System.out.println();
 
-    res = "select h_name from habitat where h_name = \'"+habName+"\'";
-    result = stmt.executeQuery(res);
+    pre = conn.prepareStatement(findHab);
+    pre.setString(1, habName);
+    result = pre.executeQuery();
     if(result.next())
       habName = result.getString("h_name");
     else
@@ -943,17 +1018,18 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
       return;
     }
     
+    pre = conn.prepareStatement(speciesHab);
     pre.setString(1, habName);
 
     result = pre.executeQuery();
 
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
     while(result.next())
     {
         System.out.println("Name: " + result.getString(1));
         System.out.println("Species: " + result.getString(2));
         System.out.println("Habitat: " + habName);
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+        System.out.println(uiDivider);
     }
 
     stmt.close();
@@ -980,14 +1056,14 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
     result = pre.executeQuery();
 
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
     while(result.next())
     {
       System.out.println("Name: " + result.getString(1));
       System.out.println("Body: " + result.getString(2));
       System.out.println("Length: " + result.getFloat(3));
       System.out.println("Time Period: " + result.getString(4));
-      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+      System.out.println(uiDivider);
     }
     
   }
@@ -1024,7 +1100,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
 
     result = pre.executeQuery();
 
-    System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+    System.out.println(uiDivider);
     while(result.next())
     {
       System.out.println("Name: " + result.getString(1));
@@ -1032,7 +1108,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
       System.out.println("Diet: " + result.getString(3));
       System.out.println("Mouth: " + result.getString(4));
       System.out.println("Time Period: " + result.getString(5));
-      System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+      System.out.println(uiDivider);
     }
 
     result.close();
@@ -1063,11 +1139,11 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     else
       maxKey++;
 
-    
-    System.out.println("Please Enter Dinosaur Name: ");
     System.out.println("Enter N/A if not applicable");
+    System.out.print("Please Enter Dinosaur Name: ");
     dinoName = input.nextLine();
     dinoName = formatString(dinoName);
+    System.out.println();
     
     System.out.println("Options: Dinosaur, Fossil, Habitat, Location, Physical Traits, Pronunciation, Taxonomy, Time Period");
     System.out.print("Please Enter Table Name: ");
@@ -1105,6 +1181,7 @@ public static void userQuery11(Connection conn, Scanner input) throws SQLExcepti
     System.out.print("Please Enter Dinosaur Name: ");
     dinoName = input.nextLine();
     dinoName = formatString(dinoName);
+    System.out.println();
 
     getTableInfo(conn, input, "requests", dinoName);
   }

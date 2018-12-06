@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /* This class contains modification statements of admin, UI ASCII art for the terminal, and queries used across the program. */
 public class DinoQueries
 {
+    protected static Boolean colorMode = false;
+
     protected static String dinoBanner2 = "██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗    ████████╗ ██████╗" + "\n" +  //source http://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
                                           "██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝    ╚══██╔══╝██╔═══██╗" + "\n" +
                                           "██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗         ██║   ██║   ██║" + "\n" +
@@ -136,6 +138,24 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
     //Terminal Colors End
 
+    //UI Stuff Start
+    protected static String MainMenu1, MainMenu2, Dino, DinoMenu1, DinoMenu2, UserMenu1, UserMenu2, uiDivider = ""; 
+    protected static String colorBanner2 = ANSI_RED_BACKGROUND + ANSI_YELLOW + dinoBanner2 + ANSI_RESET;
+    protected static String colorBanner = ANSI_RED_BACKGROUND + ANSI_YELLOW + dinoBanner + ANSI_RESET;
+    protected static String colorDino = ANSI_RED_BACKGROUND + ANSI_YELLOW + jurassicDino + ANSI_RESET;
+    protected static String colorDino2 = ANSI_RED_BACKGROUND + ANSI_YELLOW + jurassicDino2 + ANSI_RESET;
+    protected static String colorDivDinoDB = ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------DinoDatabase Main Menu--------" + ANSI_RESET;
+    protected static String colorUserMenu = ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------User Menu--------" + ANSI_RESET;
+    protected static String colorUserMenuDiv = ANSI_RED_BACKGROUND + ANSI_YELLOW + "------------------------" + ANSI_RESET;
+    protected static String colorDivDB = ANSI_RED_BACKGROUND + ANSI_YELLOW + "-------------------------------------" + ANSI_RESET;
+    protected static String DivDinoDB = "-------DinoDatabase Main Menu--------";
+    protected static String UserMenu = "-------User Menu--------";
+    protected static String UserMenuDiv =  "------------------------";
+    protected static String DivDB =  "-------------------------------------" ;
+    protected static String colorgenDiv = ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET;
+    protected static String genDiv = "--------------------------------------------------------------------------------------------";
+
+    //UI Stuff End
 
     //Queries used userLogin
     protected static String logCheck = "select * from userbase where u_username = ? and u_password = ?;"; //1
@@ -235,6 +255,10 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     protected static String speciesHab = "SELECT d_name, t_species " + //16
                                          "FROM taxonomy, Dinosaur " +
                                          "WHERE t_dinokey = d_dinokey and d_habkey IN (SELECT h_key FROM habitat WHERE h_name = ?);";
+    protected static String findHab = "select h_name from habitat where h_name = ?";
+    protected static String findDiet = "select d_diet from dinosaur where d_diet = ?";
+    //Queries UserQuery12 End
+
     //Queries UserQuery13
     protected static String dinoBodyType = "select d_name, pt_body, pt_length, tp_name " + //17
                                            "from Dinosaur, timeperiod, physicalTraits " +
@@ -297,6 +321,14 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     protected static String selUser = "select u_username, u_type from userbase;"; //23?
     protected static String updateStatus = "update userbase set u_type = ? where u_username = ?";
     //Queries UpdateUser End
+
+    //Queries Update Request
+    protected static String updateReq = "update requests set r_updatestatus = 't' where r_requestkey = ?";
+    //Queries Update Request End
+
+    //Queries Delete Request
+    protected static String delReq = "delete from requests where r_updatestatus = 't';";
+    //Queries Delete Request End
 
     public static String formatString(String in) //formats String so that the input is always right no matter how the user types it
     { 
@@ -418,7 +450,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
             ResultSetMetaData resultMeta = result.getMetaData();
             int colNumber = resultMeta.getColumnCount();
             pre = conn.prepareStatement(entries[counter]);
-            System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+            System.out.println(uiDivider);
             for(int i = 1; i <= colNumber; i++)
             {
                 colName = resultMeta.getColumnName(i);
@@ -443,15 +475,15 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
                 info = info.toLowerCase();
             
                 pre.setString(i, info);
-                System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+                System.out.println(uiDivider);
             }
             pre.executeUpdate();
             counter++;
         
         }
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+        System.out.println(uiDivider);
         System.out.print("Enter Nation: ");
-        System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "--------------------------------------------------------------------------------------------" + ANSI_RESET);
+        System.out.println(uiDivider);
         info = input.nextLine();
         info = info.toLowerCase();
         System.out.println();
@@ -659,8 +691,10 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         String newStatus = "";
         int in = 0;
 
-        System.out.println("Which User's Status Would You Like to Update?: 1 for Yes, 2 for No");
+        System.out.print("Which User's Status Would You Like to Update?: 1 for Yes, 2 for No");
         result = stmt.executeQuery(selUser);
+        System.out.println();
+
         while(result.next())
         {
             System.out.print("User: " + result.getString(1) + " Status: " + result.getString(2) + "?: ");
@@ -681,7 +715,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
                 break;
             }
         }
-
+        System.out.println();
         quickFix = input.nextLine();
         System.out.println("Options: User, Hist, Admin");
         System.out.print("What New Status Would You Like?: ");
@@ -705,8 +739,52 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         pre.close();
         result.close();
         stmt.close();
+    }
 
+    public static void updateRequest(Connection conn, Scanner input) throws SQLException
+    {
+        PreparedStatement pre = conn.prepareStatement(updateReq);
+        String quickFix = input.nextLine();
+        int key = 0;
 
+        System.out.print("Enter Request Key You'd like to update: ");
+        try
+            {
+              key = input.nextInt();
+            }
+            catch(InputMismatchException e)
+            {
+              System.out.println("Invalid Input.");
+              input.next();
+              return;
+            }
+        System.out.println();
+        pre.setInt(1, key);
+        pre.executeUpdate();
 
+        System.out.println("Update Executed.");
+        pre.close();
+    }
+    public static void delRequest(Connection conn, Scanner input) throws SQLException
+    {
+        Statement stmt = conn.createStatement();
+        String quickFix = input.nextLine();
+        String uSure = "";
+
+        System.out.println("Are you sure you want to delete requests from database?");
+        System.out.print("Enter 'Yes' or 'No': ");
+        uSure = input.nextLine();
+        uSure = uSure.toLowerCase();
+        System.out.println();
+
+        if(uSure.equals("yes"))
+        {
+            stmt.executeUpdate(delReq);
+            System.out.println("Requests Deleted.");
+        }
+        else if(uSure.equals("no"))
+            System.out.println("Deletion Cancelled.");
+        
+        stmt.close();
     }
 }
