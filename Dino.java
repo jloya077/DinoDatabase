@@ -54,7 +54,7 @@ public class Dino extends DinoQueries
       int in = -1;
       while(true)
       {
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(1);
         System.out.println(DinoMenu1);
         System.out.println("0: Quit Program");
         System.out.println("1: Log in");
@@ -402,7 +402,7 @@ public class Dino extends DinoQueries
     int in = -1;
     while(true)
     {
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(1);
         System.out.println(UserMenu1);
         System.out.println("0: Exit User Menu");
         System.out.println("1: I'm Feeling Lucky");
@@ -738,6 +738,7 @@ public static void userQuery6(Connection conn, Scanner input) throws SQLExceptio
   result = pre.executeQuery();
 
   System.out.println(uiDivider);
+  while(result.next())
   {
     System.out.println("Rank: " + rank);
     System.out.println("Habitat: " + result.getString(1));

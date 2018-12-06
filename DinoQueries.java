@@ -302,7 +302,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     //Queries insertData
     protected static String insertDino = "insert into Dinosaur values(?, ?, ?, ?, ?, ?, ?)";
     protected static String insertFossil = "insert into fossil values(?, ?, ?, ?);";
-    protected static String insertPhysTrait = "insert into physicalTraits values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    protected static String insertPhysTrait = "insert into physicalTraits values(?, ?, ?, ?, ?, ?, ?, ?, ?);";
     protected static String insertPronounce = "insert into pronunciation values(?, ?, ?);";
     protected static String insertTax = "insert into taxonomy values(?, ?, ?, ?, ?);";
     protected static String findDinoLoc2 = "select * from location where l_nation = ?"; //20 (maybe? might be a stretch)
@@ -483,10 +483,10 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
         }
         System.out.println(uiDivider);
         System.out.print("Enter Nation: ");
-        System.out.println(uiDivider);
         info = input.nextLine();
         info = info.toLowerCase();
         System.out.println();
+        System.out.println(uiDivider);
 
         pre = conn.prepareStatement(findDinoLoc2);
         pre.setString(1, info);
