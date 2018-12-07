@@ -161,6 +161,7 @@ protected static String jurassicDino2 = //SOURCE https://manytools.org/hacker-to
     protected static String logCheck = "select * from userbase where u_username = ? and u_password = ?;"; //1
     protected static String logCheck2 = "select u_username from userbase where u_username = ?"; //22 (again maybe?)
     protected static String logCreate = "insert into userbase values(?,?,?);";
+    //Queries used UserLogin End
     
     //Queries Used UserTableInfo
     protected static String selFossil = "select d_name, f_fossilData, f_fossilEvidence, f_period from Dinosaur, fossil where d_dinokey = f_dinokey"; //2

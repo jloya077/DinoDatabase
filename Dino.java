@@ -4,13 +4,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
-/* 20(potentially) Queries Done So Far 
-   Implement Another One once Daniel Updates Database
-   have request table include user name so User can search]
-   request table by User name 
-   System.out.println("--------------------------------------------------------------------------------------------"); 
-   System.out.println(ANSI_RED_BACKGROUND + ANSI_YELLOW + "============================================================================================" + ANSI_RESET);
-   original line separator just in case  */
+/* 24ish(potentially, lost count) Queries Done So Far */
 public class Dino extends DinoQueries
 {
    protected static Boolean histLogin = false;
@@ -302,7 +296,6 @@ public class Dino extends DinoQueries
          System.out.println("Weight: " + result.getString(7));
          System.out.println("Mouth Type: " + result.getString(8));
          System.out.println("Defining Trait: " + result.getString(9));
-         //System.out.println("Class: " + result.getString(10));
          System.out.println(uiDivider);
        }
      }
